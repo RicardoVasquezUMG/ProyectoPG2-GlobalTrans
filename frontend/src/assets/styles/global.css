@@ -1,0 +1,106 @@
+/* ============================================================
+   GlobalTrans — Estilos Globales
+   Reset, box-sizing, body base, y utilidades.
+   ============================================================ */
+
+@import './_variables.css';
+@import './_typography.css';
+@import './_overrides.css';
+
+/* ---- Reset ---- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ---- HTML y Body ---- */
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--gt-font-body);
+  font-size: var(--gt-text-base);
+  line-height: var(--gt-leading-normal);
+  color: var(--gt-text-primary);
+  background-color: var(--gt-deep-navy);
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* ---- Tipografía base ---- */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--gt-font-display);
+  font-weight: var(--gt-font-bold);
+  line-height: var(--gt-leading-tight);
+  letter-spacing: var(--gt-tracking-tight);
+  color: var(--gt-text-primary);
+}
+
+h1 { font-size: var(--gt-text-4xl); }
+h2 { font-size: var(--gt-text-3xl); }
+h3 { font-size: var(--gt-text-2xl); }
+h4 { font-size: var(--gt-text-xl); }
+h5 { font-size: var(--gt-text-lg); }
+h6 { font-size: var(--gt-text-base); }
+
+p {
+  color: var(--gt-text-secondary);
+  line-height: var(--gt-leading-relaxed);
+}
+
+a {
+  color: var(--gt-electric-blue);
+  text-decoration: none;
+  transition: color var(--gt-transition-fast);
+}
+
+a:hover {
+  color: var(--gt-teal);
+}
+
+/* ---- Scrollbar personalizado ---- */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--gt-deep-navy);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--gt-surface-light);
+  border-radius: var(--gt-radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gt-surface-hover);
+}
+
+/* ---- Selección ---- */
+::selection {
+  background: var(--gt-electric-blue);
+  color: white;
+}
+
+/* ---- Reduced motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

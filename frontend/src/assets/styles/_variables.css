@@ -1,0 +1,75 @@
+/* ============================================================
+   GlobalTrans — Design Tokens
+   Paleta, spacing, radii, sombras y transiciones.
+   Tema oscuro premium con acentos de azul eléctrico y teal.
+   ============================================================ */
+
+:root {
+  /* ---- Paleta principal ---- */
+  --gt-deep-navy: #0a0f1e;
+  --gt-surface-dark: #111827;
+  --gt-surface: #1a2236;
+  --gt-surface-light: #243049;
+  --gt-surface-hover: #2d3b5e;
+
+  /* ---- Acentos ---- */
+  --gt-electric-blue: #3b82f6;
+  --gt-electric-blue-hover: #2563eb;
+  --gt-electric-blue-subtle: rgba(59, 130, 246, 0.12);
+  --gt-teal: #14b8a6;
+  --gt-teal-hover: #0d9488;
+  --gt-teal-subtle: rgba(20, 184, 166, 0.12);
+
+  /* ---- Texto ---- */
+  --gt-text-primary: #f1f5f9;
+  --gt-text-secondary: #94a3b8;
+  --gt-text-muted: #64748b;
+  --gt-text-inverse: #0a0f1e;
+
+  /* ---- Bordes ---- */
+  --gt-border: #2d3b5e;
+  --gt-border-light: #374766;
+  --gt-border-focus: var(--gt-electric-blue);
+
+  /* ---- Estados ---- */
+  --gt-success: #22c55e;
+  --gt-success-bg: rgba(34, 197, 94, 0.12);
+  --gt-warning: #f59e0b;
+  --gt-warning-bg: rgba(245, 158, 11, 0.12);
+  --gt-error: #ef4444;
+  --gt-error-bg: rgba(239, 68, 68, 0.12);
+  --gt-info: var(--gt-electric-blue);
+  --gt-info-bg: var(--gt-electric-blue-subtle);
+
+  /* ---- Spacing (múltiplos de 4px) ---- */
+  --gt-space-1: 4px;
+  --gt-space-2: 8px;
+  --gt-space-3: 12px;
+  --gt-space-4: 16px;
+  --gt-space-5: 20px;
+  --gt-space-6: 24px;
+  --gt-space-8: 32px;
+  --gt-space-10: 40px;
+  --gt-space-12: 48px;
+  --gt-space-16: 64px;
+  --gt-space-20: 80px;
+
+  /* ---- Border Radius ---- */
+  --gt-radius-sm: 6px;
+  --gt-radius-md: 10px;
+  --gt-radius-lg: 16px;
+  --gt-radius-xl: 24px;
+  --gt-radius-full: 9999px;
+
+  /* ---- Sombras ---- */
+  --gt-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --gt-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --gt-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --gt-shadow-glow: 0 0 20px rgba(59, 130, 246, 0.15);
+
+  /* ---- Transiciones ---- */
+  --gt-transition-fast: 150ms ease;
+  --gt-transition-base: 250ms ease;
+  --gt-transition-slow: 400ms ease;
+  --gt-transition-spring: 350ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}

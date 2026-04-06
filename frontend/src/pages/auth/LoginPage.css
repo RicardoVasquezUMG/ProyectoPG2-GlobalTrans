@@ -1,0 +1,132 @@
+/* ============================================================
+   LoginPage — Estilos del formulario de login
+   ============================================================ */
+
+.login-page {
+  width: 100%;
+}
+
+.login-page__header {
+  margin-bottom: var(--gt-space-8);
+}
+
+.login-page__title {
+  font-family: var(--gt-font-display);
+  font-size: var(--gt-text-3xl);
+  font-weight: var(--gt-font-bold);
+  color: var(--gt-text-primary);
+  margin-bottom: var(--gt-space-2);
+}
+
+.login-page__description {
+  color: var(--gt-text-secondary);
+  font-size: var(--gt-text-sm);
+}
+
+/* ---- Formulario ---- */
+.login-page__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gt-space-5);
+}
+
+.login-page__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gt-space-2);
+}
+
+.login-page__label {
+  font-size: var(--gt-text-sm);
+  font-weight: var(--gt-font-medium);
+  color: var(--gt-text-secondary);
+  letter-spacing: var(--gt-tracking-wide);
+}
+
+/* ---- Input con icono ---- */
+.login-page__input-wrapper {
+  position: relative;
+}
+
+.login-page__input-icon {
+  position: absolute;
+  left: var(--gt-space-4);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--gt-text-muted);
+  font-size: var(--gt-text-sm);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.login-page__input-wrapper .login-page__input {
+  width: 100%;
+  padding-left: calc(var(--gt-space-4) + 20px + var(--gt-space-2));
+}
+
+/* ---- Input base ---- */
+.login-page__input {
+  width: 100%;
+}
+
+/* ---- Password ---- */
+.login-page__password {
+  width: 100%;
+}
+
+.login-page__password .p-inputtext {
+  width: 100%;
+}
+
+/* ---- Errores de validación ---- */
+.login-page__error {
+  color: var(--gt-error);
+  font-size: var(--gt-text-xs);
+  display: flex;
+  align-items: center;
+  gap: var(--gt-space-1);
+}
+
+.login-page__error::before {
+  content: '•';
+}
+
+/* ---- Inputs inválidos ---- */
+.login-page__input.p-invalid,
+.login-page__password.p-invalid .p-inputtext {
+  border-color: var(--gt-error);
+}
+
+.login-page__input.p-invalid:focus,
+.login-page__password.p-invalid .p-inputtext:focus {
+  box-shadow: 0 0 0 3px var(--gt-error-bg);
+}
+
+/* ---- Botón submit ---- */
+.login-page__submit {
+  width: 100%;
+  margin-top: var(--gt-space-3);
+  padding: var(--gt-space-3) var(--gt-space-6) !important;
+  font-size: var(--gt-text-base) !important;
+}
+
+/* ---- Footer ---- */
+.login-page__footer {
+  margin-top: var(--gt-space-8);
+  text-align: center;
+}
+
+.login-page__footer p {
+  font-size: var(--gt-text-sm);
+  color: var(--gt-text-muted);
+}
+
+.login-page__link {
+  color: var(--gt-electric-blue);
+  font-weight: var(--gt-font-semibold);
+  transition: color var(--gt-transition-fast);
+}
+
+.login-page__link:hover {
+  color: var(--gt-teal);
+}

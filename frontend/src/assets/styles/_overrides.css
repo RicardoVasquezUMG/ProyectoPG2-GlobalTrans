@@ -1,0 +1,169 @@
+/* ============================================================
+   GlobalTrans — PrimeReact Overrides
+   Personalización del tema para coincidir con el sistema de diseño.
+   ============================================================ */
+
+/* ---- Inputs ---- */
+.p-inputtext,
+.p-password input {
+  background-color: var(--gt-surface);
+  border: 1px solid var(--gt-border);
+  color: var(--gt-text-primary);
+  border-radius: var(--gt-radius-md);
+  padding: var(--gt-space-3) var(--gt-space-4);
+  font-family: var(--gt-font-body);
+  font-size: var(--gt-text-base);
+  transition: border-color var(--gt-transition-fast), box-shadow var(--gt-transition-fast);
+}
+
+.p-inputtext:enabled:hover,
+.p-password input:enabled:hover {
+  border-color: var(--gt-border-light);
+}
+
+.p-inputtext:enabled:focus,
+.p-password input:enabled:focus {
+  border-color: var(--gt-border-focus);
+  box-shadow: 0 0 0 3px var(--gt-electric-blue-subtle);
+  outline: none;
+}
+
+.p-inputtext::placeholder {
+  color: var(--gt-text-muted);
+}
+
+/* ---- FloatLabel ---- */
+.p-float-label label {
+  color: var(--gt-text-muted);
+  font-family: var(--gt-font-body);
+  font-size: var(--gt-text-sm);
+}
+
+/* ---- Password toggle ---- */
+.p-password-toggle-mask-icon {
+  color: var(--gt-text-muted);
+}
+
+.p-password-panel {
+  background-color: var(--gt-surface);
+  border: 1px solid var(--gt-border);
+  border-radius: var(--gt-radius-md);
+}
+
+/* ---- Botones ---- */
+.p-button {
+  font-family: var(--gt-font-body);
+  font-weight: var(--gt-font-semibold);
+  border-radius: var(--gt-radius-md);
+  padding: var(--gt-space-3) var(--gt-space-6);
+  transition: all var(--gt-transition-fast);
+  letter-spacing: var(--gt-tracking-wide);
+}
+
+.p-button:not(.p-button-text):not(.p-button-outlined):not(.p-button-link) {
+  background: linear-gradient(135deg, var(--gt-electric-blue), var(--gt-electric-blue-hover));
+  border: none;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+.p-button:not(.p-button-text):not(.p-button-outlined):not(.p-button-link):hover {
+  background: linear-gradient(135deg, var(--gt-electric-blue-hover), #1d4ed8);
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4);
+  transform: translateY(-1px);
+}
+
+.p-button:not(.p-button-text):not(.p-button-outlined):not(.p-button-link):active {
+  transform: translateY(0);
+  box-shadow: 0 1px 4px rgba(59, 130, 246, 0.3);
+}
+
+.p-button.p-button-text {
+  color: var(--gt-electric-blue);
+}
+
+.p-button.p-button-text:hover {
+  background: var(--gt-electric-blue-subtle);
+}
+
+.p-button.p-button-link {
+  color: var(--gt-electric-blue);
+  padding: 0;
+}
+
+.p-button.p-button-link:hover {
+  color: var(--gt-teal);
+}
+
+.p-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* ---- Loading spinner en botones ---- */
+.p-button .p-button-loading-icon {
+  margin-right: var(--gt-space-2);
+}
+
+/* ---- Toast ---- */
+.p-toast {
+  font-family: var(--gt-font-body);
+}
+
+.p-toast .p-toast-message {
+  border-radius: var(--gt-radius-md);
+  backdrop-filter: blur(12px);
+}
+
+.p-toast .p-toast-message.p-toast-message-success {
+  background: var(--gt-success-bg);
+  border-left: 4px solid var(--gt-success);
+  color: var(--gt-text-primary);
+}
+
+.p-toast .p-toast-message.p-toast-message-error {
+  background: var(--gt-error-bg);
+  border-left: 4px solid var(--gt-error);
+  color: var(--gt-text-primary);
+}
+
+.p-toast .p-toast-message.p-toast-message-warn {
+  background: var(--gt-warning-bg);
+  border-left: 4px solid var(--gt-warning);
+  color: var(--gt-text-primary);
+}
+
+.p-toast .p-toast-message.p-toast-message-info {
+  background: var(--gt-info-bg);
+  border-left: 4px solid var(--gt-info);
+  color: var(--gt-text-primary);
+}
+
+/* ---- Card ---- */
+.p-card {
+  background-color: var(--gt-surface);
+  border: 1px solid var(--gt-border);
+  border-radius: var(--gt-radius-lg);
+  color: var(--gt-text-primary);
+  box-shadow: var(--gt-shadow-md);
+}
+
+/* ---- Divider ---- */
+.p-divider.p-divider-horizontal::before {
+  border-top-color: var(--gt-border);
+}
+
+/* ---- Message severity ---- */
+.p-message.p-message-error {
+  background: var(--gt-error-bg);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: var(--gt-error);
+  border-radius: var(--gt-radius-md);
+}
+
+/* ---- Focus visible para accesibilidad ---- */
+*:focus-visible {
+  outline: 2px solid var(--gt-electric-blue);
+  outline-offset: 2px;
+}

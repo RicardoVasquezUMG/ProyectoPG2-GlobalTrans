@@ -1,0 +1,127 @@
+/* ============================================================
+   RegisterPage — Estilos del formulario de registro
+   ============================================================ */
+
+.register-page {
+  width: 100%;
+}
+
+.register-page__header {
+  margin-bottom: var(--gt-space-6);
+}
+
+.register-page__title {
+  font-family: var(--gt-font-display);
+  font-size: var(--gt-text-3xl);
+  font-weight: var(--gt-font-bold);
+  color: var(--gt-text-primary);
+  margin-bottom: var(--gt-space-2);
+}
+
+.register-page__description {
+  color: var(--gt-text-secondary);
+  font-size: var(--gt-text-sm);
+}
+
+/* ---- Formulario ---- */
+.register-page__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gt-space-4);
+}
+
+.register-page__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gt-space-2);
+}
+
+.register-page__label {
+  font-size: var(--gt-text-sm);
+  font-weight: var(--gt-font-medium);
+  color: var(--gt-text-secondary);
+  letter-spacing: var(--gt-tracking-wide);
+}
+
+/* ---- Input con icono ---- */
+.register-page__input-wrapper {
+  position: relative;
+}
+
+.register-page__input-icon {
+  position: absolute;
+  left: var(--gt-space-4);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--gt-text-muted);
+  font-size: var(--gt-text-sm);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.register-page__input-wrapper .register-page__input {
+  width: 100%;
+  padding-left: calc(var(--gt-space-4) + 20px + var(--gt-space-2));
+}
+
+/* ---- Input base ---- */
+.register-page__input {
+  width: 100%;
+}
+
+/* ---- Password ---- */
+.register-page__password {
+  width: 100%;
+}
+
+.register-page__password .p-inputtext {
+  width: 100%;
+}
+
+/* ---- Errores de validación ---- */
+.register-page__error {
+  color: var(--gt-error);
+  font-size: var(--gt-text-xs);
+  display: flex;
+  align-items: center;
+  gap: var(--gt-space-1);
+}
+
+.register-page__error::before {
+  content: '•';
+}
+
+/* ---- Inputs inválidos ---- */
+.register-page__input.p-invalid,
+.register-page__password.p-invalid .p-inputtext {
+  border-color: var(--gt-error);
+}
+
+/* ---- Botón submit ---- */
+.register-page__submit {
+  width: 100%;
+  margin-top: var(--gt-space-2);
+  padding: var(--gt-space-3) var(--gt-space-6) !important;
+  font-size: var(--gt-text-base) !important;
+}
+
+/* ---- Footer ---- */
+.register-page__footer {
+  margin-top: var(--gt-space-6);
+  text-align: center;
+}
+
+.register-page__footer p {
+  font-size: var(--gt-text-sm);
+  color: var(--gt-text-muted);
+}
+
+.register-page__link {
+  color: var(--gt-electric-blue);
+  font-weight: var(--gt-font-semibold);
+  transition: color var(--gt-transition-fast);
+}
+
+.register-page__link:hover {
+  color: var(--gt-teal);
+}

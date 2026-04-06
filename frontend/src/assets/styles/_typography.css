@@ -1,0 +1,43 @@
+/* ============================================================
+   GlobalTrans — Tipografía
+   Fuentes: Space Grotesk (display) + Inter (body)
+   Escala tipográfica completa.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+:root {
+  /* ---- Familias ---- */
+  --gt-font-display: 'Space Grotesk', system-ui, sans-serif;
+  --gt-font-body: 'Inter', system-ui, sans-serif;
+
+  /* ---- Escala tipográfica ---- */
+  --gt-text-xs: 0.75rem;     /* 12px */
+  --gt-text-sm: 0.875rem;    /* 14px */
+  --gt-text-base: 1rem;      /* 16px */
+  --gt-text-lg: 1.125rem;    /* 18px */
+  --gt-text-xl: 1.25rem;     /* 20px */
+  --gt-text-2xl: 1.5rem;     /* 24px */
+  --gt-text-3xl: 1.875rem;   /* 30px */
+  --gt-text-4xl: 2.25rem;    /* 36px */
+  --gt-text-5xl: 3rem;       /* 48px */
+
+  /* ---- Line heights ---- */
+  --gt-leading-tight: 1.2;
+  --gt-leading-snug: 1.35;
+  --gt-leading-normal: 1.5;
+  --gt-leading-relaxed: 1.65;
+
+  /* ---- Pesos ---- */
+  --gt-font-light: 300;
+  --gt-font-regular: 400;
+  --gt-font-medium: 500;
+  --gt-font-semibold: 600;
+  --gt-font-bold: 700;
+
+  /* ---- Letter spacing ---- */
+  --gt-tracking-tight: -0.02em;
+  --gt-tracking-normal: 0;
+  --gt-tracking-wide: 0.025em;
+  --gt-tracking-wider: 0.05em;
+}
