@@ -2,7 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 
 // Estilos de PrimeReact
-import 'primereact/resources/themes/lara-dark-blue/theme.css'; // Tema base
+import 'primereact/resources/themes/lara-light-blue/theme.css'; // Tema base claro
 import 'primereact/resources/primereact.min.css';             // Componentes base
 import 'primeicons/primeicons.css';                           // Iconos
 import 'primeflex/primeflex.css';                             // Utility classes

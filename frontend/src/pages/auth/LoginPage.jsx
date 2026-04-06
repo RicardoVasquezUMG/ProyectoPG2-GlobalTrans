@@ -1,15 +1,16 @@
 /**
  * Página de inicio de sesión.
- * Formulario con email y contraseña usando componentes PrimeReact.
+ * Formulario con email y contraseña usando componentes nativos de PrimeReact y utilidades de PrimeFlex.
  */
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { InputText } from 'primereact/inputtext';
 import { Password } from 'primereact/password';
 import { Button } from 'primereact/button';
+import { IconField } from 'primereact/iconfield';
+import { InputIcon } from 'primereact/inputicon';
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../../hooks/useToast';
-import './LoginPage.css';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -55,22 +56,23 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="login-page">
-      <div className="login-page__header">
-        <h2 className="login-page__title">Iniciar sesión</h2>
-        <p className="login-page__description">
-          Ingresa tus credenciales para acceder al sistema
-        </p>
+    <div className="w-full">
+      <div className="text-center mb-5">
+        <div className="inline-flex align-items-center justify-content-center bg-blue-500 text-white border-round-xl w-3rem h-3rem mb-3 shadow-2">
+          <i className="pi pi-globe text-xl" />
+        </div>
+        <h2 className="text-900 text-2xl font-semibold mb-2">Iniciar sesión</h2>
+        <span className="text-600 text-sm">Ingresa tus credenciales para acceder</span>
       </div>
 
-      <form onSubmit={handleSubmit} className="login-page__form" noValidate>
+      <form onSubmit={handleSubmit} className="p-fluid flex flex-column gap-3" noValidate>
         {/* Campo: Email */}
-        <div className="login-page__field">
-          <label htmlFor="login-email" className="login-page__label">
+        <div className="flex flex-column gap-2">
+          <label htmlFor="login-email" className="font-semibold text-700 text-sm">
             Correo electrónico
           </label>
-          <div className="login-page__input-wrapper">
-            <i className="pi pi-envelope login-page__input-icon" />
+          <IconField iconPosition="left" className="w-full">
+            <InputIcon className="pi pi-envelope text-500" />
             <InputText
               id="login-email"
               type="email"
@@ -79,20 +81,22 @@ export default function LoginPage() {
                 setEmail(e.target.value);
                 if (errors.email) setErrors((prev) => ({ ...prev, email: '' }));
               }}
-              placeholder="tu@correo.com"
-              className={`login-page__input ${errors.email ? 'p-invalid' : ''}`}
+              placeholder="ejemplo@correo.com"
+              className={errors.email ? 'p-invalid' : ''}
               autoComplete="email"
               autoFocus
             />
-          </div>
+          </IconField>
           {errors.email && (
-            <small className="login-page__error">{errors.email}</small>
+            <small className="p-error flex align-items-center gap-1 text-xs">
+              <i className="pi pi-exclamation-circle" /> {errors.email}
+            </small>
           )}
         </div>
 
         {/* Campo: Contraseña */}
-        <div className="login-page__field">
-          <label htmlFor="login-password" className="login-page__label">
+        <div className="flex flex-column gap-2">
+          <label htmlFor="login-password" className="font-semibold text-700 text-sm">
             Contraseña
           </label>
           <Password
@@ -102,37 +106,34 @@ export default function LoginPage() {
               setPassword(e.target.value);
               if (errors.password) setErrors((prev) => ({ ...prev, password: '' }));
             }}
-            placeholder="Tu contraseña"
-            className={`login-page__password ${errors.password ? 'p-invalid' : ''}`}
+            placeholder="contraseña"
+            className={errors.password ? 'p-invalid' : ''}
             feedback={false}
             toggleMask
             autoComplete="current-password"
-            inputClassName="login-page__input"
           />
           {errors.password && (
-            <small className="login-page__error">{errors.password}</small>
+            <small className="p-error flex align-items-center gap-1 text-xs">
+              <i className="pi pi-exclamation-circle" /> {errors.password}
+            </small>
           )}
         </div>
 
-        {/* Botón de submit */}
         <Button
           type="submit"
           label="Iniciar sesión"
           icon="pi pi-sign-in"
-          className="login-page__submit"
+          className="mt-3"
           loading={loading}
           disabled={loading}
         />
       </form>
 
-      {/* Link a registro */}
-      <div className="login-page__footer">
-        <p>
-          ¿No tienes cuenta?{' '}
-          <Link to="/register" className="login-page__link">
-            Crear cuenta
-          </Link>
-        </p>
+      <div className="text-center mt-4 text-600 text-sm">
+        ¿No tienes cuenta?{' '}
+        <Link to="/register" className="font-semibold text-blue-500 no-underline hover:underline">
+          Crear cuenta
+        </Link>
       </div>
     </div>
   );

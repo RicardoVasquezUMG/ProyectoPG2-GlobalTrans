@@ -1,32 +1,32 @@
 /**
  * Página de registro de usuario.
- * Formulario con nombre, email, teléfono, contraseña y confirmación.
- * Asigna automáticamente el rol LEVEL_3 (Cliente).
+ * Formulario que permite crear una cuenta con rol LEVEL_3 (Cliente) usando componentes nativos de PrimeReact.
  */
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { InputText } from 'primereact/inputtext';
 import { Password } from 'primereact/password';
 import { Button } from 'primereact/button';
-import { InputMask } from 'primereact/inputmask';
+import { IconField } from 'primereact/iconfield';
+import { InputIcon } from 'primereact/inputicon';
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../../hooks/useToast';
-import './RegisterPage.css';
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
-    full_name: '',
     email: '',
-    phone: '',
     password: '',
     confirmPassword: '',
+    full_name: '',
+    phone: '',
   });
+
   const [errors, setErrors] = useState({});
   const { register, loading } = useAuth();
-  const { showSuccess, showError, showInfo } = useToast();
+  const { showSuccess, showError } = useToast();
   const navigate = useNavigate();
 
-  /** Actualiza un campo del formulario */
+  /** Actualiza valores del formulario */
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
@@ -34,14 +34,12 @@ export default function RegisterPage() {
     }
   };
 
-  /** Valida todos los campos del formulario */
+  /** Valida los campos del formulario */
   const validate = () => {
     const newErrors = {};
 
     if (!formData.full_name.trim()) {
       newErrors.full_name = 'El nombre completo es obligatorio';
-    } else if (formData.full_name.trim().length < 2) {
-      newErrors.full_name = 'El nombre debe tener al menos 2 caracteres';
     }
 
     if (!formData.email.trim()) {
@@ -52,8 +50,8 @@ export default function RegisterPage() {
 
     if (!formData.phone.trim()) {
       newErrors.phone = 'El teléfono es obligatorio';
-    } else if (formData.phone.replace(/\D/g, '').length < 8) {
-      newErrors.phone = 'El teléfono debe tener al menos 8 dígitos';
+    } else if (!/^\d{8,15}$/.test(formData.phone)) {
+      newErrors.phone = 'El teléfono debe contener entre 8 y 15 dígitos numéricos';
     }
 
     if (!formData.password) {
@@ -62,9 +60,7 @@ export default function RegisterPage() {
       newErrors.password = 'La contraseña debe tener al menos 6 caracteres';
     }
 
-    if (!formData.confirmPassword) {
-      newErrors.confirmPassword = 'Confirma tu contraseña';
-    } else if (formData.password !== formData.confirmPassword) {
+    if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Las contraseñas no coinciden';
     }
 
@@ -72,110 +68,112 @@ export default function RegisterPage() {
     return Object.keys(newErrors).length === 0;
   };
 
-  /** Maneja el envío del formulario */
+  /** Envía los datos de registro */
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
 
     try {
-      const data = await register({
-        email: formData.email,
-        password: formData.password,
-        full_name: formData.full_name.trim(),
-        phone: formData.phone.replace(/\D/g, ''),
-      });
+      const response = await register(formData);
 
-      if (data.access_token) {
-        showSuccess('Cuenta creada exitosamente. ¡Bienvenido!');
+      if (response.access_token) {
+        showSuccess('Registro completado y sesión iniciada');
         navigate('/dashboard', { replace: true });
       } else {
-        showInfo('Cuenta creada. Revisa tu correo para confirmar tu cuenta.');
+        showSuccess('Registro exitoso. Se ha enviado un correo de confirmación.');
         navigate('/login', { replace: true });
       }
     } catch (error) {
-      const message = error.response?.data?.detail || 'Error al crear la cuenta. Intenta de nuevo.';
+      const message = error.response?.data?.detail || 'Error al completar el registro. Intenta de nuevo.';
       showError(message);
     }
   };
 
   return (
-    <div className="register-page">
-      <div className="register-page__header">
-        <h2 className="register-page__title">Crear cuenta</h2>
-        <p className="register-page__description">
-          Completa tus datos para registrarte en el sistema
-        </p>
+    <div className="w-full">
+      <div className="text-center mb-4">
+        <div className="inline-flex align-items-center justify-content-center bg-blue-500 text-white border-round-xl w-3rem h-3rem mb-2 shadow-2">
+          <i className="pi pi-user-plus text-xl" />
+        </div>
+        <h2 className="text-900 text-2xl font-semibold mb-2">Crear cuenta</h2>
+        <span className="text-600 text-sm">Completa los datos para registrarte</span>
       </div>
 
-      <form onSubmit={handleSubmit} className="register-page__form" noValidate>
+      <form onSubmit={handleSubmit} className="p-fluid flex flex-column gap-3" noValidate>
         {/* Campo: Nombre completo */}
-        <div className="register-page__field">
-          <label htmlFor="register-name" className="register-page__label">
+        <div className="flex flex-column gap-2">
+          <label htmlFor="register-name" className="font-semibold text-700 text-sm">
             Nombre completo
           </label>
-          <div className="register-page__input-wrapper">
-            <i className="pi pi-user register-page__input-icon" />
+          <IconField iconPosition="left">
+            <InputIcon className="pi pi-user text-500" />
             <InputText
               id="register-name"
               value={formData.full_name}
               onChange={(e) => handleChange('full_name', e.target.value)}
               placeholder="Juan Pérez"
-              className={`register-page__input ${errors.full_name ? 'p-invalid' : ''}`}
+              className={errors.full_name ? 'p-invalid' : ''}
               autoComplete="name"
               autoFocus
             />
-          </div>
+          </IconField>
           {errors.full_name && (
-            <small className="register-page__error">{errors.full_name}</small>
+            <small className="p-error flex align-items-center gap-1 text-xs">
+              <i className="pi pi-exclamation-circle" /> {errors.full_name}
+            </small>
           )}
         </div>
 
         {/* Campo: Email */}
-        <div className="register-page__field">
-          <label htmlFor="register-email" className="register-page__label">
+        <div className="flex flex-column gap-2">
+          <label htmlFor="register-email" className="font-semibold text-700 text-sm">
             Correo electrónico
           </label>
-          <div className="register-page__input-wrapper">
-            <i className="pi pi-envelope register-page__input-icon" />
+          <IconField iconPosition="left">
+            <InputIcon className="pi pi-envelope text-500" />
             <InputText
               id="register-email"
               type="email"
               value={formData.email}
               onChange={(e) => handleChange('email', e.target.value)}
               placeholder="tu@correo.com"
-              className={`register-page__input ${errors.email ? 'p-invalid' : ''}`}
+              className={errors.email ? 'p-invalid' : ''}
               autoComplete="email"
             />
-          </div>
+          </IconField>
           {errors.email && (
-            <small className="register-page__error">{errors.email}</small>
+            <small className="p-error flex align-items-center gap-1 text-xs">
+              <i className="pi pi-exclamation-circle" /> {errors.email}
+            </small>
           )}
         </div>
 
         {/* Campo: Teléfono */}
-        <div className="register-page__field">
-          <label htmlFor="register-phone" className="register-page__label">
+        <div className="flex flex-column gap-2">
+          <label htmlFor="register-phone" className="font-semibold text-700 text-sm">
             Teléfono
           </label>
-          <div className="register-page__input-wrapper">
-            <i className="pi pi-phone register-page__input-icon" />
+          <IconField iconPosition="left">
+            <InputIcon className="pi pi-phone text-500" />
             <InputText
               id="register-phone"
               value={formData.phone}
               onChange={(e) => handleChange('phone', e.target.value)}
               placeholder="12345678"
-              className={`register-page__input ${errors.phone ? 'p-invalid' : ''}`}
+              className={errors.phone ? 'p-invalid' : ''}
               autoComplete="tel"
             />
-          </div>
+          </IconField>
           {errors.phone && (
-            <small className="register-page__error">{errors.phone}</small>
+            <small className="p-error flex align-items-center gap-1 text-xs">
+              <i className="pi pi-exclamation-circle" /> {errors.phone}
+            </small>
           )}
         </div>
 
         {/* Campo: Contraseña */}
-        <div className="register-page__field">
-          <label htmlFor="register-password" className="register-page__label">
+        <div className="flex flex-column gap-2">
+          <label htmlFor="register-password" className="font-semibold text-700 text-sm">
             Contraseña
           </label>
           <Password
@@ -183,23 +181,24 @@ export default function RegisterPage() {
             value={formData.password}
             onChange={(e) => handleChange('password', e.target.value)}
             placeholder="Mínimo 6 caracteres"
-            className={`register-page__password ${errors.password ? 'p-invalid' : ''}`}
+            className={errors.password ? 'p-invalid' : ''}
             toggleMask
             autoComplete="new-password"
-            inputClassName="register-page__input"
             promptLabel="Escribe una contraseña"
             weakLabel="Débil"
             mediumLabel="Media"
             strongLabel="Fuerte"
           />
           {errors.password && (
-            <small className="register-page__error">{errors.password}</small>
+            <small className="p-error flex align-items-center gap-1 text-xs">
+              <i className="pi pi-exclamation-circle" /> {errors.password}
+            </small>
           )}
         </div>
 
         {/* Campo: Confirmar contraseña */}
-        <div className="register-page__field">
-          <label htmlFor="register-confirm" className="register-page__label">
+        <div className="flex flex-column gap-2">
+          <label htmlFor="register-confirm" className="font-semibold text-700 text-sm">
             Confirmar contraseña
           </label>
           <Password
@@ -207,36 +206,33 @@ export default function RegisterPage() {
             value={formData.confirmPassword}
             onChange={(e) => handleChange('confirmPassword', e.target.value)}
             placeholder="Repite tu contraseña"
-            className={`register-page__password ${errors.confirmPassword ? 'p-invalid' : ''}`}
+            className={errors.confirmPassword ? 'p-invalid' : ''}
             feedback={false}
             toggleMask
             autoComplete="new-password"
-            inputClassName="register-page__input"
           />
           {errors.confirmPassword && (
-            <small className="register-page__error">{errors.confirmPassword}</small>
+            <small className="p-error flex align-items-center gap-1 text-xs">
+              <i className="pi pi-exclamation-circle" /> {errors.confirmPassword}
+            </small>
           )}
         </div>
 
-        {/* Botón de submit */}
         <Button
           type="submit"
           label="Crear cuenta"
           icon="pi pi-user-plus"
-          className="register-page__submit"
+          className="mt-2"
           loading={loading}
           disabled={loading}
         />
       </form>
 
-      {/* Link a login */}
-      <div className="register-page__footer">
-        <p>
-          ¿Ya tienes cuenta?{' '}
-          <Link to="/login" className="register-page__link">
-            Iniciar sesión
-          </Link>
-        </p>
+      <div className="text-center mt-4 text-600 text-sm">
+        ¿Ya tienes cuenta?{' '}
+        <Link to="/login" className="font-semibold text-blue-500 no-underline hover:underline">
+          Iniciar sesión
+        </Link>
       </div>
     </div>
   );

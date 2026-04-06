@@ -22,7 +22,7 @@ export default function AuthLayout() {
             </div>
             <h1 className="auth-layout__title">GlobalTrans</h1>
             <p className="auth-layout__subtitle">
-              Gestión de transporte global inteligente
+              Gestión de Transporte Centroamericano.
             </p>
             <div className="auth-layout__features">
               <div className="auth-layout__feature">

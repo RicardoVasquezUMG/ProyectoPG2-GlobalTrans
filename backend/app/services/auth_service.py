@@ -3,7 +3,7 @@ Servicio de autenticación.
 Maneja login, registro y verificación de sesión contra Supabase Auth.
 """
 from app.database import supabase, get_supabase_admin
-from app.models.auth import LoginRequest, RegisterRequest, UserResponse, TokenResponse
+from app.models.auth import LoginRequest, RegisterRequest, UserResponse
 from app.utils.exceptions import AuthenticationError, ConflictError, BadRequestError
 from app.config import UserRole
 from gotrue.errors import AuthApiError
@@ -13,7 +13,7 @@ class AuthService:
     """Lógica de negocio para autenticación de usuarios."""
 
     @staticmethod
-    async def login(data: LoginRequest) -> TokenResponse:
+    async def login(data: LoginRequest) -> UserResponse:
         """
         Autentica un usuario con email y contraseña.
         Retorna tokens JWT y datos del usuario con su rol.
@@ -53,20 +53,14 @@ class AuthService:
             avatar_url=user_data.get("avatar_url")
         )
 
-        return TokenResponse(
-            access_token=auth_response.session.access_token,
-            refresh_token=auth_response.session.refresh_token,
-            token_type="bearer",
-            user=user_response
-        )
+        return user_response
 
     @staticmethod
-    async def register(data: RegisterRequest) -> TokenResponse:
+    async def register(data: RegisterRequest) -> UserResponse:
         """
         Registra un nuevo usuario.
         Crea cuenta en Supabase Auth e inserta registro en tabla users con rol LEVEL_3.
         """
-        # Verificar si el email ya existe en la tabla users
         # Verificar si el email ya existe en la tabla users
         existing = get_supabase_admin().table("users").select("id").eq("email", data.email).execute()
         if existing.data:
@@ -107,10 +101,9 @@ class AuthService:
                 "is_active": True
             }).execute()
         except Exception as e:
-            print(f"DEBUG REGISTER INSERT ERROR: {e}")
             # Si falla el insert en users, intentar limpiar el usuario de auth
             # (best effort — no siempre es posible sin service_role)
-            raise BadRequestError(detail=f"Error al completar el registro: {str(e)}")
+            raise BadRequestError(detail="Error al completar el registro. Intenta de nuevo.")
 
         if not user_insert.data:
             raise BadRequestError(detail="Error al guardar los datos del usuario")
@@ -129,12 +122,7 @@ class AuthService:
                 avatar_url=user_data.get("avatar_url")
             )
 
-            return TokenResponse(
-                access_token=auth_response.session.access_token,
-                refresh_token=auth_response.session.refresh_token,
-                token_type="bearer",
-                user=user_response
-            )
+            return user_response
 
         # Si se requiere confirmación de email, retornar sin tokens
         user_data = user_insert.data[0]
@@ -148,43 +136,8 @@ class AuthService:
             phone=user_data.get("phone")
         )
 
-        return TokenResponse(
-            access_token="",
-            refresh_token=None,
-            token_type="bearer",
-            user=user_response
-        )
+        return user_response
 
-    @staticmethod
-    async def get_user_by_token(token: str) -> UserResponse:
-        """
-        Verifica un token JWT y retorna los datos del usuario.
-        """
-        try:
-            # Verificar token con Supabase Auth
-            user_response = supabase.auth.get_user(token)
-        except Exception:
-            raise AuthenticationError(detail="Token inválido o expirado")
-
-        if not user_response or not user_response.user:
-            raise AuthenticationError(detail="Token inválido o expirado")
-
-        # Obtener datos del usuario con rol
-        user_data = await AuthService._get_user_with_role(user_response.user.id)
-
-        if not user_data:
-            raise AuthenticationError(detail="Usuario no encontrado en el sistema")
-
-        return UserResponse(
-            id=user_data["id"],
-            email=user_data["email"],
-            full_name=user_data["full_name"],
-            role=user_data["roles"]["name"] if user_data.get("roles") else "LEVEL_3",
-            role_name=user_data["roles"]["description"] if user_data.get("roles") else None,
-            is_active=user_data["is_active"],
-            phone=user_data.get("phone"),
-            avatar_url=user_data.get("avatar_url")
-        )
 
     @staticmethod
     async def _get_user_with_role(auth_id: str) -> dict | None:

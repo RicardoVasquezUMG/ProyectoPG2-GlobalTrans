@@ -6,9 +6,9 @@ export const ROLES = {
 };
 
 export const ROLE_LABELS = {
-  [ROLES.LEVEL_1]: 'Nivel 1 (Administrador)',
-  [ROLES.LEVEL_2]: 'Nivel 2 (Operador)',
-  [ROLES.LEVEL_3]: 'Nivel 3 (Cliente)',
+  [ROLES.LEVEL_1]: 'Administrador',
+  [ROLES.LEVEL_2]: 'Analista',
+  [ROLES.LEVEL_3]: 'Piloto',
 };
 
 export const PERMISSIONS = {

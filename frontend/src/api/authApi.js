@@ -28,20 +28,3 @@ export const registerUser = async (data) => {
   return response.data;
 };
 
-/**
- * Cierra la sesión del usuario.
- * @returns {Promise<{message: string, success: boolean}>}
- */
-export const logoutUser = async () => {
-  const response = await axiosInstance.post('/api/auth/logout');
-  return response.data;
-};
-
-/**
- * Obtiene los datos del usuario autenticado.
- * @returns {Promise<object>} Datos del usuario
- */
-export const getCurrentUser = async () => {
-  const response = await axiosInstance.get('/api/auth/me');
-  return response.data;
-};

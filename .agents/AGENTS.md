@@ -295,7 +295,6 @@ async def get_reports(user = Depends(require_roles(UserRole.LEVEL_1, UserRole.LE
 #### PrimeReact
 - Usar los componentes de PrimeReact como primera opción antes de crear componentes custom.
 - Componentes prioritarios: `DataTable`, `Dialog`, `Toast`, `Menu`, `Sidebar`, `Card`, `InputText`, `Dropdown`, `Calendar`, `Button`.
-- Temas: usar el sistema de temas de PrimeReact (`lara-dark-blue` o `lara-light-blue` como base).
 - Personalizar con CSS custom en `_overrides.css`, nunca modificar los archivos fuente de PrimeReact.
 - Para formularios, usar los componentes de PrimeReact con validación manual o con una librería ligera como `react-hook-form`.
 
@@ -566,3 +565,5 @@ uvicorn app.main:app --reload     # Servidor de desarrollo (puerto 8000)
 8. **El código nuevo** debe seguir los patrones ya establecidos en el proyecto. Revisar archivos existentes antes de crear nuevos.
 9. **Toda página** debe tener un título descriptivo (`<title>`) y una estructura semántica con `<h1>` único.
 10. **Los formularios** usan componentes PrimeReact con validación del lado cliente y del lado servidor.
+11. **Consultas a la base de datos desde el backend**: El backend debe utilizar el cliente administrador (`get_supabase_admin()`) para cualquier consulta o manipulación en tablas de base de datos (`users`, `roles`, etc.) para evitar problemas de permisos de Row Level Security (RLS) y contaminación de la sesión en entornos concurrentes.
+

@@ -9,9 +9,12 @@ export default function PrivateRoute({ children }) {
   const { isAuthenticated, initializing } = useAuth();
   const location = useLocation();
 
-  // Solo bloquear renderizado si está inicializando la sesión inicial y no está autenticado
-  if (initializing && !isAuthenticated) {
-    return null;
+  if (initializing) {
+    return (
+      <div className="min-h-screen flex align-items-center justify-content-center bg-slate-50">
+        <i className="pi pi-spin pi-spinner text-blue-600" style={{ fontSize: '2rem' }}></i>
+      </div>
+    );
   }
 
   if (!isAuthenticated) {

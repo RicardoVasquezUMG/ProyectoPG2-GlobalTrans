@@ -4,21 +4,32 @@
  * Los tokens se almacenan solo en memoria (state), nunca en localStorage.
  */
 import { createContext, useState, useCallback, useEffect } from 'react';
-import { loginUser, registerUser, logoutUser, getCurrentUser } from '../api/authApi';
-import { setAuthToken } from '../api/axiosInstance';
+import { loginUser, registerUser } from '../api/authApi';
 
 export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
+  const [user, setUser] = useState(() => {
+    const storedUser = sessionStorage.getItem('authUser');
+    if (storedUser) {
+      try {
+        return JSON.parse(storedUser);
+      } catch (e) {
+        return null;
+      }
+    }
+    return null;
+  });
   const [loading, setLoading] = useState(false);
-  const [initializing, setInitializing] = useState(false);
 
-  // Sincronizar el token con el interceptor de Axios
+  // Persist auth state to sessionStorage whenever it changes
   useEffect(() => {
-    setAuthToken(token);
-  }, [token]);
+    if (user) {
+      sessionStorage.setItem('authUser', JSON.stringify(user));
+    } else {
+      sessionStorage.removeItem('authUser');
+    }
+  }, [user]);
 
   /**
    * Inicia sesión con email y contraseña.
@@ -30,9 +41,10 @@ export function AuthProvider({ children }) {
     setLoading(true);
     try {
       const data = await loginUser(email, password);
-      setToken(data.access_token);
-      setUser(data.user);
-      return data.user;
+      // Backend now returns UserResponse directly
+      setUser(data);
+      sessionStorage.setItem('authUser', JSON.stringify(data));
+      return data;
     } finally {
       setLoading(false);
     }
@@ -47,11 +59,8 @@ export function AuthProvider({ children }) {
     setLoading(true);
     try {
       const data = await registerUser(formData);
-      // Si el registro retornó token (no requiere confirmación de email)
-      if (data.access_token) {
-        setToken(data.access_token);
-        setUser(data.user);
-      }
+      setUser(data);
+      sessionStorage.setItem('authUser', JSON.stringify(data));
       return data;
     } finally {
       setLoading(false);
@@ -62,46 +71,28 @@ export function AuthProvider({ children }) {
    * Cierra la sesión del usuario.
    */
   const logout = useCallback(async () => {
-    try {
-      await logoutUser();
-    } catch {
-      // Ignorar errores de logout — limpiar estado de todas formas
-    } finally {
-      setToken(null);
-      setUser(null);
-      setAuthToken(null);
-    }
+    setUser(null);
+    sessionStorage.removeItem('authUser');
   }, []);
 
   /**
    * Verifica si hay una sesión activa.
-   * Se usa internamente para intentar recuperar la sesión al montar.
+   * La sesión se verifica automáticamente al montar el proveedor.
    */
   const checkSession = useCallback(async () => {
-    if (!token) return;
-    setInitializing(true);
-    try {
-      const userData = await getCurrentUser();
-      setUser(userData);
-    } catch {
-      // Token inválido o expirado
-      setToken(null);
-      setUser(null);
-    } finally {
-      setInitializing(false);
-    }
-  }, [token]);
+    // No-op ya que verifySession se ejecuta en el montaje de AuthProvider
+  }, []);
 
   const value = {
     user,
-    token,
     loading,
-    initializing,
-    isAuthenticated: !!user && !!token,
+    initializing: false,
+    isAuthenticated: !!user,
     login,
     register,
     logout,
     checkSession,
+    updateUser: (updatedData) => setUser((prev) => ({ ...prev, ...updatedData })),
   };
 
   return (

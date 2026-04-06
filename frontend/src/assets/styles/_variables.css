@@ -1,43 +1,43 @@
 /* ============================================================
    GlobalTrans — Design Tokens
    Paleta, spacing, radii, sombras y transiciones.
-   Tema oscuro premium con acentos de azul eléctrico y teal.
+   Tema claro corporativo integrado con PrimeReact lara-light-blue.
    ============================================================ */
 
 :root {
-  /* ---- Paleta principal ---- */
-  --gt-deep-navy: #0a0f1e;
-  --gt-surface-dark: #111827;
-  --gt-surface: #1a2236;
-  --gt-surface-light: #243049;
-  --gt-surface-hover: #2d3b5e;
+  /* ---- Paleta principal (Tema Claro) ---- */
+  --gt-deep-navy: #f1f5f9;      /* Fondo general de la aplicación */
+  --gt-surface-dark: #ffffff;   /* Paneles principales / barras superiores */
+  --gt-surface: #ffffff;        /* Tarjetas / componentes */
+  --gt-surface-light: #f8fafc;  /* Elementos secundarios */
+  --gt-surface-hover: #e2e8f0;  /* Efecto hover */
 
-  /* ---- Acentos ---- */
+  /* ---- Acentos (Azul / Celeste integrado) ---- */
   --gt-electric-blue: #3b82f6;
   --gt-electric-blue-hover: #2563eb;
-  --gt-electric-blue-subtle: rgba(59, 130, 246, 0.12);
-  --gt-teal: #14b8a6;
-  --gt-teal-hover: #0d9488;
-  --gt-teal-subtle: rgba(20, 184, 166, 0.12);
+  --gt-electric-blue-subtle: rgba(59, 130, 246, 0.08);
+  --gt-teal: #0d9488;
+  --gt-teal-hover: #0f766e;
+  --gt-teal-subtle: rgba(13, 148, 136, 0.08);
 
   /* ---- Texto ---- */
-  --gt-text-primary: #f1f5f9;
-  --gt-text-secondary: #94a3b8;
-  --gt-text-muted: #64748b;
-  --gt-text-inverse: #0a0f1e;
+  --gt-text-primary: #0f172a;   /* Texto principal (casi negro) */
+  --gt-text-secondary: #475569; /* Texto secundario */
+  --gt-text-muted: #64748b;     /* Texto sutil / leyendas */
+  --gt-text-inverse: #ffffff;   /* Texto sobre fondos oscuros */
 
   /* ---- Bordes ---- */
-  --gt-border: #2d3b5e;
-  --gt-border-light: #374766;
+  --gt-border: #e2e8f0;
+  --gt-border-light: #f1f5f9;
   --gt-border-focus: var(--gt-electric-blue);
 
   /* ---- Estados ---- */
-  --gt-success: #22c55e;
-  --gt-success-bg: rgba(34, 197, 94, 0.12);
-  --gt-warning: #f59e0b;
-  --gt-warning-bg: rgba(245, 158, 11, 0.12);
-  --gt-error: #ef4444;
-  --gt-error-bg: rgba(239, 68, 68, 0.12);
+  --gt-success: #16a34a;
+  --gt-success-bg: rgba(22, 163, 74, 0.08);
+  --gt-warning: #d97706;
+  --gt-warning-bg: rgba(217, 119, 6, 0.08);
+  --gt-error: #dc2626;
+  --gt-error-bg: rgba(220, 38, 38, 0.08);
   --gt-info: var(--gt-electric-blue);
   --gt-info-bg: var(--gt-electric-blue-subtle);
 
@@ -62,10 +62,10 @@
   --gt-radius-full: 9999px;
 
   /* ---- Sombras ---- */
-  --gt-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
-  --gt-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
-  --gt-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
-  --gt-shadow-glow: 0 0 20px rgba(59, 130, 246, 0.15);
+  --gt-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --gt-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --gt-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --gt-shadow-glow: 0 0 15px rgba(59, 130, 246, 0.08);
 
   /* ---- Transiciones ---- */
   --gt-transition-fast: 150ms ease;

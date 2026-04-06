@@ -32,14 +32,6 @@ class UserResponse(BaseModel):
     avatar_url: Optional[str] = None
 
 
-class TokenResponse(BaseModel):
-    """Schema de respuesta con tokens de autenticación."""
-    access_token: str
-    refresh_token: Optional[str] = None
-    token_type: str = "bearer"
-    user: UserResponse
-
-
 class MessageResponse(BaseModel):
     """Schema genérico para respuestas con mensaje."""
     message: str
