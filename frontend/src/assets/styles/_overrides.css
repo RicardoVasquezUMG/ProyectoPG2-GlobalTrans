@@ -1,1 +1,69 @@
 /* Vacío por defecto para utilizar los estilos y colores predeterminados del tema lara-light-blue de PrimeReact */
+
+/* ==========================================================================
+   Estilos específicos para Sidebar oscuro (Estilo lara-dark-blue)
+   ========================================================================== */
+.dark-sidebar {
+    background-color: #061442;
+    /* bg-bluegray-900 */
+}
+
+/*Linea gris divisora de opciones*/
+.dark-sidebar .sidebar-border {
+    border-color: #334155 !important;
+}
+
+.dark-sidebar .sidebar-text {
+    color: rgba(255, 255, 255, 0.87) !important;
+}
+
+.dark-sidebar .sidebar-text-muted {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Botones de navegación */
+.dark-sidebar .dark-sidebar-btn {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.dark-sidebar .dark-sidebar-btn:hover {
+    background-color: rgba(255, 255, 255, 0.06) !important;
+    color: rgba(255, 255, 255, 0.87) !important;
+}
+
+.dark-sidebar .dark-sidebar-btn.active {
+    background-color: rgba(255, 255, 255, 0.151) !important;
+    color: #f3f3f3 !important;
+    /* text-blue-400 */
+}
+
+/* Remover el anillo blanco de enfoque en los botones del sidebar oscuro */
+.dark-sidebar .dark-sidebar-btn:focus {
+    /* El primer anillo se pone del color del fondo (#1e293b) para que sea invisible, 
+       y el segundo se pone celeste (#60a5fa) */
+    box-shadow: 0 0 0 2px #061442, 0 0 0 4px #061442 !important;
+}
+
+/* Área de usuario */
+.dark-sidebar .dark-sidebar-user {
+    transition: background-color 0.2s;
+    cursor: pointer;
+}
+
+.dark-sidebar .dark-sidebar-user:hover {
+    background-color: rgba(255, 255, 255, 0.04);
+}
+
+/* Iconos de PrimeReact dentro del sidebar (como el chevron) */
+.dark-sidebar .p-button.p-button-plain {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.dark-sidebar .p-button.p-button-plain:hover {
+    background-color: rgba(255, 255, 255, 0.04);
+    color: rgba(255, 255, 255, 0.87);
+}
+
+.dark-sidebar .p-button.p-button-plain:focus {
+    box-shadow: 0 0 0 2px #061442, 0 0 0 4px #061442 !important;
+}

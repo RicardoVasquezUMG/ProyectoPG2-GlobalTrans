@@ -6,27 +6,28 @@
  */
 export function getMenuItems(role) {
   const baseItems = [
-    { key: 'perfil', label: 'Perfil', icon: 'pi pi-user' },
+    { key: 'dashboard', label: 'Inicio', icon: 'pi pi-home', path: '/dashboard' },
+    { key: 'perfil', label: 'Perfil', icon: 'pi pi-user', path: '/perfil' },
   ];
 
   // Add role‑specific navigation items (extend as needed)
   switch (role) {
     case 'LEVEL_1': // Administrador
       baseItems.push(
-        { key: 'admin-dashboard', label: 'Dashboard', icon: 'pi pi-chart-line' },
-        { key: 'admin-users', label: 'Usuarios', icon: 'pi pi-users' }
+        { key: 'admin-users', label: 'Usuarios', icon: 'pi pi-users', path: '/usuarios' }
       );
       break;
-    case 'LEVEL_2': // Operador
+    case 'LEVEL_2': // Operador / Nivel 2
       baseItems.push(
-        { key: 'operator-shipments', label: 'Envíos', icon: 'pi pi-box' },
-        { key: 'operator-routes', label: 'Rutas', icon: 'pi pi-map' }
+        { key: 'operator-vehicles', label: 'Vehículos', icon: 'pi pi-car', path: '/vehiculos' },
+        { key: 'operator-vans', label: 'Furgones', icon: 'pi pi-truck', path: '/furgones' },
+        { key: 'operator-schedules', label: 'Cronogramas', icon: 'pi pi-calendar', path: '/cronogramas' }
       );
       break;
-    case 'LEVEL_3': // Cliente
+    case 'LEVEL_3': // Cliente / Nivel 3
       baseItems.push(
-        { key: 'client-tracking', label: 'Rastrear', icon: 'pi pi-search' },
-        { key: 'client-orders', label: 'Pedidos', icon: 'pi pi-shopping-cart' }
+        { key: 'client-trips', label: 'Viajes', icon: 'pi pi-compass', path: '/viajes' },
+        { key: 'client-docs', label: 'Documentos', icon: 'pi pi-file', path: '/documentos' }
       );
       break;
     default:

@@ -4,6 +4,7 @@ Configura la app, middlewares y routers.
 """
 from fastapi import FastAPI
 from app.api.auth import router as auth_router
+from app.api.users import router as users_router
 from app.middleware.cors import setup_cors
 
 # Crear la aplicación FastAPI
@@ -20,6 +21,7 @@ setup_cors(app)
 
 # Registrar routers
 app.include_router(auth_router)
+app.include_router(users_router)
 
 
 @app.get("/", tags=["health"])
