@@ -15,15 +15,14 @@ import PrivateRoute from '../guards/PrivateRoute';
 import RoleRoute from '../guards/RoleRoute';
 import { ROLES, PERMISSIONS } from '../utils/constants';
 
+import UsersPage from '../pages/admin/UsersPage';
+
 // Placeholders para nuevas vistas CRUD
 import VehicleCrudPage from '../pages/operator/VehicleCrudPage';
 import VanCrudPage from '../pages/operator/VanCrudPage';
 import ScheduleCrudPage from '../pages/operator/ScheduleCrudPage';
 import TripsCrudPage from '../pages/client/TripsCrudPage';
 import DocumentsCrudPage from '../pages/client/DocumentsCrudPage';
-
-// Componente placeholder para usuarios si no existe
-const UsersPagePlaceholder = () => <div className="p-5"><h1>Gestión de Usuarios</h1></div>;
 
 export default function AppRouter() {
   return (
@@ -51,7 +50,7 @@ export default function AppRouter() {
           path="/usuarios"
           element={
             <RoleRoute allowedRoles={PERMISSIONS.MODULE_ADMIN || ['LEVEL_1']}>
-              <UsersPagePlaceholder />
+              <UsersPage />
             </RoleRoute>
           }
         />

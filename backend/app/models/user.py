@@ -5,3 +5,5 @@ class UserUpdate(BaseModel):
     full_name: Optional[str] = None
     phone: Optional[str] = None
     avatar_url: Optional[str] = None
+    role_id: Optional[str] = None
+    is_active: Optional[bool] = None
