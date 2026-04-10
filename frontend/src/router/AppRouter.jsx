@@ -16,9 +16,9 @@ import RoleRoute from '../guards/RoleRoute';
 import { ROLES, PERMISSIONS } from '../utils/constants';
 
 import UsersPage from '../pages/admin/UsersPage';
+import VehiclesPage from '../pages/admin/VehiclesPage';
 
 // Placeholders para nuevas vistas CRUD
-import VehicleCrudPage from '../pages/operator/VehicleCrudPage';
 import VanCrudPage from '../pages/operator/VanCrudPage';
 import ScheduleCrudPage from '../pages/operator/ScheduleCrudPage';
 import TripsCrudPage from '../pages/client/TripsCrudPage';
@@ -54,16 +54,16 @@ export default function AppRouter() {
             </RoleRoute>
           }
         />
-
-        {/* Rutas protegidas por rol: Nivel 2 (Operador) */}
         <Route
           path="/vehiculos"
           element={
-            <RoleRoute allowedRoles={['LEVEL_1', 'LEVEL_2']}>
-              <VehicleCrudPage />
+            <RoleRoute allowedRoles={['LEVEL_1']}>
+              <VehiclesPage />
             </RoleRoute>
           }
         />
+
+        {/* Rutas protegidas por rol: Nivel 2 (Operador) */}
         <Route
           path="/furgones"
           element={
