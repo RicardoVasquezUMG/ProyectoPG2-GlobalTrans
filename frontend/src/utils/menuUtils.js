@@ -15,12 +15,12 @@ export function getMenuItems(role) {
     case 'LEVEL_1': // Administrador
       baseItems.push(
         { key: 'admin-users', label: 'Usuarios', icon: 'pi pi-users', path: '/usuarios' },
-        { key: 'admin-vehicles', label: 'Vehículos', icon: 'pi pi-car', path: '/vehiculos' }
+        { key: 'admin-vehicles', label: 'Vehículos', icon: 'pi pi-car', path: '/vehiculos' },
+        { key: 'admin-vans', label: 'Furgones', icon: 'pi pi-truck', path: '/furgones' }
       );
       break;
     case 'LEVEL_2': // Operador / Nivel 2
       baseItems.push(
-        { key: 'operator-vans', label: 'Furgones', icon: 'pi pi-truck', path: '/furgones' },
         { key: 'operator-schedules', label: 'Cronogramas', icon: 'pi pi-calendar', path: '/cronogramas' }
       );
       break;

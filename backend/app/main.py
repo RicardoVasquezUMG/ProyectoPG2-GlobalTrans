@@ -7,6 +7,7 @@ from app.api.auth import router as auth_router
 from app.api.users import router as users_router
 from app.api.roles import router as roles_router
 from app.api.vehicles import router as vehicles_router
+from app.api.furgones import router as furgones_router
 from app.middleware.cors import setup_cors
 
 # Crear la aplicación FastAPI
@@ -26,6 +27,7 @@ app.include_router(auth_router)
 app.include_router(users_router)
 app.include_router(roles_router)
 app.include_router(vehicles_router)
+app.include_router(furgones_router)
 
 
 @app.get("/", tags=["health"])
