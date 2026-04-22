@@ -56,23 +56,29 @@ export default function MainLayout() {
           </div>
 
           <div className="flex flex-column gap-1">
-            {!isSidebarCollapsed && (
-              <span className="text-xs font-semibold uppercase tracking-wider px-2 py-1 sidebar-text-muted">
-                Navegación
-              </span>
-            )}
-            {getMenuItems(user?.role).map((item) => (
-              <Button
-                key={item.key}
-                label={!isSidebarCollapsed ? item.label : undefined}
-                icon={item.icon}
-                tooltip={isSidebarCollapsed ? item.label : undefined}
-                tooltipOptions={{ position: 'right' }}
-                onClick={() => navigate(item.path)}
-                className={`p-button-text justify-content-start w-full text-sm font-medium dark-sidebar-btn ${location.pathname.startsWith(item.path) ? 'active' : ''
-                  } ${isSidebarCollapsed ? 'justify-content-center px-0' : ''}`}
-              />
-            ))}
+            {getMenuItems(user?.role).map((item) => {
+              if (item.isDivider) {
+                return !isSidebarCollapsed ? (
+                  <span key={item.key} className="text-xs font-semibold uppercase tracking-wider px-2 py-2 mt-2 sidebar-text-muted">
+                    {item.label}
+                  </span>
+                ) : (
+                  <div key={item.key} className="border-bottom-1 sidebar-border my-2 w-full"></div>
+                );
+              }
+              return (
+                <Button
+                  key={item.key}
+                  label={!isSidebarCollapsed ? item.label : undefined}
+                  icon={item.icon}
+                  tooltip={isSidebarCollapsed ? item.label : undefined}
+                  tooltipOptions={{ position: 'right' }}
+                  onClick={() => navigate(item.path)}
+                  className={`p-button-text justify-content-start w-full text-sm font-medium dark-sidebar-btn ${location.pathname.startsWith(item.path) ? 'active' : ''
+                    } ${isSidebarCollapsed ? 'justify-content-center px-0' : ''}`}
+                />
+              );
+            })}
           </div>
         </div>
 

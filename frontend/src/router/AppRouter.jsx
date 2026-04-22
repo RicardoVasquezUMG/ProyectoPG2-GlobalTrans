@@ -18,6 +18,8 @@ import { ROLES, PERMISSIONS } from '../utils/constants';
 import UsersPage from '../pages/admin/UsersPage';
 import VehiclesPage from '../pages/admin/VehiclesPage';
 import FurgonesPage from '../pages/admin/FurgonesPage';
+import CampaniasPage from '../pages/admin/CampaniasPage';
+import TiendasPage from '../pages/admin/TiendasPage';
 
 // Placeholders para nuevas vistas CRUD
 import ScheduleCrudPage from '../pages/operator/ScheduleCrudPage';
@@ -67,6 +69,22 @@ export default function AppRouter() {
           element={
             <RoleRoute allowedRoles={['LEVEL_1']}>
               <FurgonesPage />
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="/campanias"
+          element={
+            <RoleRoute allowedRoles={['LEVEL_1']}>
+              <CampaniasPage />
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="/tiendas"
+          element={
+            <RoleRoute allowedRoles={['LEVEL_1']}>
+              <TiendasPage />
             </RoleRoute>
           }
         />
