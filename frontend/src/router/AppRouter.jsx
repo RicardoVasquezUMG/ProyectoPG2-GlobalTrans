@@ -20,6 +20,7 @@ import VehiclesPage from '../pages/admin/VehiclesPage';
 import FurgonesPage from '../pages/admin/FurgonesPage';
 import CampaniasPage from '../pages/admin/CampaniasPage';
 import TiendasPage from '../pages/admin/TiendasPage';
+import CargamentosPage from '../pages/admin/CargamentosPage';
 
 // Placeholders para nuevas vistas CRUD
 import ScheduleCrudPage from '../pages/operator/ScheduleCrudPage';
@@ -85,6 +86,14 @@ export default function AppRouter() {
           element={
             <RoleRoute allowedRoles={['LEVEL_1']}>
               <TiendasPage />
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="/cargamentos"
+          element={
+            <RoleRoute allowedRoles={['LEVEL_1']}>
+              <CargamentosPage />
             </RoleRoute>
           }
         />

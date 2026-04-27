@@ -21,6 +21,7 @@ export function getMenuItems(role) {
       { key: 'admin-vans', label: 'Furgones', icon: 'pi pi-truck', path: '/furgones' },
       { key: 'admin-campanias', label: 'Campañas', icon: 'pi pi-megaphone', path: '/campanias' },
       { key: 'admin-tiendas', label: 'Tiendas', icon: 'pi pi-shop', path: '/tiendas' },
+      { key: 'admin-cargamentos', label: 'Cargamentos', icon: 'pi pi-box', path: '/cargamentos' },
       
       { key: 'section-ops', label: 'Operaciones', isDivider: true },
       { key: 'operator-schedules', label: 'Cronogramas', icon: 'pi pi-calendar', path: '/cronogramas' },
