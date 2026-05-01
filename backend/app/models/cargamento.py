@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional, Literal
+from typing import Optional, Literal, List
 from datetime import datetime
 
 EstadoCargamento = Literal['creado', 'procesando', 'preparado', 'conciliado']
@@ -26,3 +26,4 @@ class CargamentoRead(CargamentoBase):
 class CargamentoReadWithRelations(CargamentoRead):
     numero_contenedor: Optional[str] = None
     descripcion_campania: Optional[str] = None
+    documentos: List[str] = []
