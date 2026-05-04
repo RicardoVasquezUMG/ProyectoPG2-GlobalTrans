@@ -12,6 +12,15 @@ class UserService:
             raise BadRequestError(detail=f"Error al obtener usuarios: {str(e)}")
 
     @staticmethod
+    async def get_pilots():
+        try:
+            # LEVEL_3 corresponds to "Piloto" per user requirements
+            response = get_supabase_admin().table("users").select("*, roles!inner(name)").eq("roles.name", "LEVEL_3").eq("is_active", True).execute()
+            return response.data
+        except Exception as e:
+            raise BadRequestError(detail=f"Error al obtener pilotos: {str(e)}")
+
+    @staticmethod
     async def update(user_id: str, data: UserUpdate):
         update_data = {k: v for k, v in data.model_dump().items() if v is not None}
         if not update_data:

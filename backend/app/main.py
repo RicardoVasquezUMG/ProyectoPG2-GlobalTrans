@@ -11,6 +11,7 @@ from app.api.furgones import router as furgones_router
 from app.api.campanias import router as campanias_router
 from app.api.tiendas import router as tiendas_router
 from app.api.cargamentos import router as cargamentos_router
+from app.api.viajes import router as viajes_router
 from app.middleware.cors import setup_cors
 
 # Crear la aplicación FastAPI
@@ -34,6 +35,7 @@ app.include_router(furgones_router)
 app.include_router(campanias_router)
 app.include_router(tiendas_router)
 app.include_router(cargamentos_router)
+app.include_router(viajes_router)
 
 
 @app.get("/", tags=["health"])

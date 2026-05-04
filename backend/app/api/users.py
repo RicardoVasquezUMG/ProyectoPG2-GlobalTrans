@@ -9,6 +9,11 @@ async def list_users():
     """Lista todos los usuarios (requiere permisos de administrador)."""
     return await UserService.get_all()
 
+@router.get("/pilots")
+async def list_pilots():
+    """Lista solo los usuarios con rol de piloto (LEVEL_3)."""
+    return await UserService.get_pilots()
+
 @router.put("/{user_id}")
 async def update_user(user_id: str, data: UserUpdate):
     """Actualiza los datos de un usuario existente."""

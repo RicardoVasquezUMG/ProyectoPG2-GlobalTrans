@@ -10,6 +10,15 @@ export const getUsers = async () => {
 };
 
 /**
+ * Obtiene solo los usuarios con rol de piloto.
+ * @returns {Promise<Array>} Lista de pilotos.
+ */
+export const getPilots = async () => {
+  const response = await axiosInstance.get('/api/users/pilots');
+  return response.data;
+};
+
+/**
  * Actualiza el perfil de un usuario existente en la base de datos.
  * @param {string} userId - El ID del usuario.
  * @param {object} data - Datos a actualizar (full_name, phone, avatar_url, role_id, is_active).

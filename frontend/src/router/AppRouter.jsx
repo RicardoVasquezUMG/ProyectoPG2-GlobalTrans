@@ -21,6 +21,7 @@ import FurgonesPage from '../pages/admin/FurgonesPage';
 import CampaniasPage from '../pages/admin/CampaniasPage';
 import TiendasPage from '../pages/admin/TiendasPage';
 import CargamentosPage from '../pages/admin/CargamentosPage';
+import ViajesPage from '../pages/admin/ViajesPage';
 
 // Placeholders para nuevas vistas CRUD
 import ScheduleCrudPage from '../pages/operator/ScheduleCrudPage';
@@ -98,7 +99,7 @@ export default function AppRouter() {
           }
         />
 
-        {/* Rutas protegidas por rol: Nivel 2 (Operador) */}
+        {/* Rutas protegidas por rol: Nivel 2 (Analista) */}
         <Route
           path="/cronogramas"
           element={
@@ -108,12 +109,12 @@ export default function AppRouter() {
           }
         />
 
-        {/* Rutas protegidas por rol: Nivel 3 (Cliente / Viajes) */}
+        {/* Rutas protegidas por rol: Nivel 3 (Piloto) */}
         <Route
           path="/viajes"
           element={
-            <RoleRoute allowedRoles={['LEVEL_1', 'LEVEL_3']}>
-              <TripsCrudPage />
+            <RoleRoute allowedRoles={['LEVEL_1']}>
+              <ViajesPage />
             </RoleRoute>
           }
         />
