@@ -4,8 +4,9 @@ import axiosInstance from './axiosInstance';
  * Obtiene todos los viajes.
  * @returns {Promise<Array>} Lista de viajes.
  */
-export const getViajes = async () => {
-  const response = await axiosInstance.get('/api/viajes');
+export const getViajes = async (usuarioId = null) => {
+  const url = usuarioId ? `/api/viajes?usuario_id=${usuarioId}` : '/api/viajes';
+  const response = await axiosInstance.get(url);
   return response.data;
 };
 

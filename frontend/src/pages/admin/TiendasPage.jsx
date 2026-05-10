@@ -30,6 +30,8 @@ export default function TiendasPage() {
     nombre: '',
     pais: '',
     direccion: '',
+    latitud: '',
+    longitud: '',
     estado: true
   };
 
@@ -174,6 +176,8 @@ export default function TiendasPage() {
         <Column field="nombre" header="Nombre" sortable />
         <Column field="pais" header="País" sortable />
         <Column field="direccion" header="Dirección" sortable />
+        <Column field="latitud" header="Latitud" sortable />
+        <Column field="longitud" header="Longitud" sortable />
         <Column field="estado" header="Estado" sortable body={estadoBodyTemplate} />
         <Column header="Acciones" body={actionsBodyTemplate} exportable={false} style={{ minWidth: '8rem' }} />
       </DataTable>
@@ -224,6 +228,24 @@ export default function TiendasPage() {
                 onChange={(e) => setEditingTienda({ ...editingTienda, direccion: e.target.value })} 
                 placeholder="Ej. 5ta Avenida..." 
                 required 
+              />
+            </div>
+            <div className="field">
+              <label htmlFor="latitud" className="font-bold">Latitud</label>
+              <InputText 
+                id="latitud" 
+                value={editingTienda.latitud || ''} 
+                onChange={(e) => setEditingTienda({ ...editingTienda, latitud: e.target.value })} 
+                placeholder="Ej. 14.6349" 
+              />
+            </div>
+            <div className="field">
+              <label htmlFor="longitud" className="font-bold">Longitud</label>
+              <InputText 
+                id="longitud" 
+                value={editingTienda.longitud || ''} 
+                onChange={(e) => setEditingTienda({ ...editingTienda, longitud: e.target.value })} 
+                placeholder="Ej. -90.5069" 
               />
             </div>
             <div className="flex align-items-center gap-2">

@@ -1,0 +1,77 @@
+/* AduanasPage.css - Styles for Admin Aduanas page
+   Following the project's dark theme (lara-dark-blue) and using design tokens from _variables.css */
+
+/* Container for the page */
+.aduanas-page {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background-color: var(--surface-card);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-xl);
+}
+
+/* Header */
+.aduanas-page .page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.aduanas-page .page-header h1 {
+  font-family: var(--font-family); /* use global font */
+  font-size: 2rem;
+  color: var(--text-color);
+  margin: 0;
+}
+
+/* Table styling – using PrimeReact DataTable defaults, but overriding for consistency */
+.aduanas-page .p-datatable {
+  border: none;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+}
+
+.aduanas-page .p-datatable .p-datatable-thead > tr > th {
+  background-color: var(--primary-color);
+  color: var(--primary-contrast);
+  font-weight: 600;
+}
+
+.aduanas-page .p-datatable .p-datatable-tbody > tr > td {
+  background-color: var(--surface-ground);
+  color: var(--text-color);
+}
+
+/* Dialog styling */
+.aduanas-page .p-dialog .p-dialog-header {
+  background-color: var(--primary-color);
+  color: var(--primary-contrast);
+}
+
+.aduanas-page .p-dialog .p-dialog-content {
+  background-color: var(--surface-card);
+}
+
+/* Form fields */
+.aduanas-page .p-inputtext {
+  width: 100%;
+}
+
+/* Buttons */
+.aduanas-page .p-button {
+  min-width: 8rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .aduanas-page {
+    padding: 1rem;
+  }
+  .aduanas-page .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}

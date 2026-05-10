@@ -1,27 +1,36 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { InputTextarea } from 'primereact/inputtextarea';
+import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
 import { Calendar } from 'primereact/calendar';
+import { Tag } from 'primereact/tag';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { getViajes, createViaje, updateViaje, deleteViaje } from '../../api/viajesApi';
 import { getCargamentos } from '../../api/cargamentosApi';
 import { getVehicles } from '../../api/vehiclesApi';
 import { getTiendas } from '../../api/tiendasApi';
 import { getPilots } from '../../api/usersApi';
+import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../../hooks/useToast';
 import { formatDate } from '../../utils/formatters';
 
 export default function ViajesPage() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const isPiloto = user?.role === 'LEVEL_3';
+
   const [viajes, setViajes] = useState([]);
   const [cargamentos, setCargamentos] = useState([]);
   const [vehiculos, setVehiculos] = useState([]);
   const [tiendas, setTiendas] = useState([]);
   const [pilotos, setPilotos] = useState([]);
-  
+
+  const [globalFilter, setGlobalFilter] = useState('');
   const [loading, setLoading] = useState(true);
   const [dialogVisible, setDialogVisible] = useState(false);
   const [formData, setFormData] = useState({
@@ -44,10 +53,10 @@ export default function ViajesPage() {
   const loadData = async () => {
     try {
       setLoading(true);
-      const data = await getViajes();
+      const data = await getViajes(isPiloto ? user.id : null);
       setViajes(data);
     } catch (error) {
-      showError('Error al cargar viajes');
+      showError('Error al cargar la información de viajes');
     } finally {
       setLoading(false);
     }
@@ -143,55 +152,101 @@ export default function ViajesPage() {
   const actionTemplate = (rowData) => {
     return (
       <div className="flex gap-2">
-        <Button icon="pi pi-pencil" rounded outlined className="p-button-sm" onClick={() => editViaje(rowData)} />
-        <Button icon="pi pi-trash" rounded outlined severity="danger" className="p-button-sm" onClick={() => confirmDelete(rowData)} />
+        <Button icon="pi pi-eye" rounded outlined className="p-button-sm" severity="info" onClick={() => navigate(`/viajes/${rowData.id}`)} tooltip="Ver detalle" />
+        {!isPiloto && (
+          <>
+            <Button icon="pi pi-pencil" rounded outlined className="p-button-sm" onClick={() => editViaje(rowData)} />
+            <Button icon="pi pi-trash" rounded outlined severity="danger" className="p-button-sm" onClick={() => confirmDelete(rowData)} />
+          </>
+        )}
       </div>
     );
   };
 
+  const estadoSeverity = {
+    planificado: 'info',
+    en_ruta: 'success',
+    en_aduana: 'warning',
+    entregado: 'success',
+    retrasado: 'danger',
+    cancelado: 'danger',
+  };
+
+  const estadoLabels = {
+    planificado: 'Planificado',
+    en_ruta: 'En Ruta',
+    en_aduana: 'En Aduana',
+    entregado: 'Entregado',
+    retrasado: 'Retrasado',
+    cancelado: 'Cancelado',
+  };
+
+  const estadoTemplate = (rowData) => {
+    const estado = rowData.estado || 'planificado';
+    return <Tag severity={estadoSeverity[estado] || 'info'} value={estadoLabels[estado] || estado} />;
+  };
+
   const dateTemplate = (rowData) => {
-    return formatDate(rowData.fecha_plan_salida);
+    if (!rowData.fecha_plan_salida) return '';
+    const dateObj = new Date(rowData.fecha_plan_salida);
+    const datePart = dateObj.toLocaleDateString('es-GT');
+    const timePart = dateObj.toLocaleTimeString('es-GT', { hour: '2-digit', minute: '2-digit' });
+    return (
+      <div className="flex flex-column">
+        <span>{datePart}</span>
+        <span className="text-500 text-sm">{timePart}</span>
+      </div>
+    );
   };
 
   return (
     <div className="page-container">
       <div className="page-header flex justify-content-between align-items-center mb-4">
         <div>
-          <h1 className="text-2xl font-bold m-0">Gestión de Viajes</h1>
-          <p className="text-500 mt-1 mb-0">Asignación de cargamentos a vehículos y pilotos</p>
+          <h1 className="text-2xl font-bold m-0">{isPiloto ? 'Mis Viajes' : 'Gestión de Viajes'}</h1>
+          <p className="text-500 mt-1 mb-0">{isPiloto ? 'Listado de tus viajes asignados' : 'Asignación de cargamentos a vehículos y pilotos'}</p>
         </div>
-        <Button label="Nuevo Viaje" icon="pi pi-plus" onClick={openNew} />
+        <div className="flex gap-2">
+          <span className="p-input-icon-left">
+            <i className="pi pi-search" />
+            <InputText type="search" onInput={(e) => setGlobalFilter(e.target.value)} placeholder="  Buscar..." />
+          </span>
+          <Button label="Recargar" icon="pi pi-refresh" className="p-button-outlined" onClick={loadData} />
+          {!isPiloto && <Button label="Nuevo Viaje" icon="pi pi-plus" onClick={openNew} />}
+        </div>
       </div>
 
       <div className="card">
-        <DataTable value={viajes} loading={loading} paginator rows={10} emptyMessage="No se encontraron viajes.">
-          <Column field="numero_contenedor" header="Cargamento (Contenedor)" sortable />
+        <DataTable value={viajes} loading={loading} paginator rows={10} emptyMessage="No se encontraron viajes." globalFilter={globalFilter}>
+          <Column field="id" header="ID Viaje" sortable />
+          <Column field="cargamento_id" header="ID Cargamento" sortable />
           <Column field="placa_vehiculo" header="Vehículo" sortable />
           <Column field="nombre_piloto" header="Piloto" sortable />
           <Column field="nombre_tienda" header="Destino (Tienda)" sortable />
+          <Column field="estado" header="Estado" body={estadoTemplate} sortable />
           <Column field="fecha_plan_salida" header="Fecha Salida" body={dateTemplate} sortable />
-          <Column body={actionTemplate} exportable={false} style={{ minWidth: '8rem' }} />
+          <Column body={actionTemplate} exportable={false} style={{ minWidth: '10rem' }} />
         </DataTable>
       </div>
 
       <Dialog visible={dialogVisible} style={{ width: '450px' }} header={isEdit ? 'Editar Viaje' : 'Nuevo Viaje'} modal className="p-fluid" onHide={hideDialog}>
         <div className="field flex flex-column">
           <label htmlFor="fecha_plan_salida">Fecha y Hora de Salida *</label>
-          <input 
-            type="datetime-local" 
-            id="fecha_plan_salida" 
-            className="p-inputtext p-component" 
-            value={formData.fecha_plan_salida ? new Date(formData.fecha_plan_salida.getTime() - formData.fecha_plan_salida.getTimezoneOffset() * 60000).toISOString().slice(0, 16) : ''} 
+          <input
+            type="datetime-local"
+            id="fecha_plan_salida"
+            className="p-inputtext p-component"
+            value={formData.fecha_plan_salida ? new Date(formData.fecha_plan_salida.getTime() - formData.fecha_plan_salida.getTimezoneOffset() * 60000).toISOString().slice(0, 16) : ''}
             onChange={(e) => {
               const val = e.target.value;
               setFormData({ ...formData, fecha_plan_salida: val ? new Date(val) : null });
-            }} 
+            }}
           />
         </div>
-        
+
         <div className="field">
           <label htmlFor="cargamento_id">Cargamento *</label>
-          <Dropdown id="cargamento_id" value={formData.cargamento_id} onChange={(e) => setFormData({ ...formData, cargamento_id: e.value })} options={cargamentos} optionLabel="numero_contenedor" optionValue="id" placeholder="Seleccione un cargamento" filter />
+          <Dropdown id="cargamento_id" value={formData.cargamento_id} onChange={(e) => setFormData({ ...formData, cargamento_id: e.value })} options={cargamentos} optionLabel="id" optionValue="id" placeholder="Seleccione un cargamento" filter />
         </div>
 
         <div className="field">
@@ -219,7 +274,7 @@ export default function ViajesPage() {
           <Button label="Guardar" icon="pi pi-check" onClick={saveViaje} />
         </div>
       </Dialog>
-      
+
       <ConfirmDialog />
     </div>
   );

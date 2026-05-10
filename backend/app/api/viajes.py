@@ -7,9 +7,9 @@ from app.config import UserRole
 router = APIRouter(prefix="/api/viajes", tags=["viajes"])
 
 @router.get("/", response_model=list[ViajeRead])
-async def list_viajes(user = Depends(require_roles(UserRole.LEVEL_1, UserRole.LEVEL_2))):
-    """Lista todos los viajes."""
-    return await ViajeService.get_all()
+async def list_viajes(usuario_id: str = None, user = Depends(require_roles(UserRole.LEVEL_1, UserRole.LEVEL_2, UserRole.LEVEL_3))):
+    """Lista todos los viajes. Si se proporciona usuario_id (ej. piloto), solo devuelve los suyos."""
+    return await ViajeService.get_all(user_id=usuario_id)
 
 @router.post("/", response_model=ViajeRead, status_code=status.HTTP_201_CREATED)
 async def create_viaje(data: ViajeCreate, user = Depends(require_roles(UserRole.LEVEL_1, UserRole.LEVEL_2))):

@@ -19,14 +19,17 @@ import UsersPage from '../pages/admin/UsersPage';
 import VehiclesPage from '../pages/admin/VehiclesPage';
 import FurgonesPage from '../pages/admin/FurgonesPage';
 import CampaniasPage from '../pages/admin/CampaniasPage';
+import AduanasPage from '../pages/admin/AduanasPage';
 import TiendasPage from '../pages/admin/TiendasPage';
 import CargamentosPage from '../pages/admin/CargamentosPage';
 import ViajesPage from '../pages/admin/ViajesPage';
-
-// Placeholders para nuevas vistas CRUD
+import MonitoreoPage from '../pages/admin/MonitoreoPage';
+import ViajeDetallePage from '../pages/admin/ViajeDetallePage';
 import ScheduleCrudPage from '../pages/operator/ScheduleCrudPage';
-import TripsCrudPage from '../pages/client/TripsCrudPage';
+import MisViajesPage from '../pages/operator/MisViajesPage';
+import NavegacionViajePage from '../pages/operator/NavegacionViajePage';
 import DocumentsCrudPage from '../pages/client/DocumentsCrudPage';
+
 
 export default function AppRouter() {
   return (
@@ -98,6 +101,14 @@ export default function AppRouter() {
             </RoleRoute>
           }
         />
+        <Route
+          path="/aduanas"
+          element={
+            <RoleRoute allowedRoles={['LEVEL_1']}>
+              <AduanasPage />
+            </RoleRoute>
+          }
+        />
 
         {/* Rutas protegidas por rol: Nivel 2 (Analista) */}
         <Route
@@ -111,10 +122,42 @@ export default function AppRouter() {
 
         {/* Rutas protegidas por rol: Nivel 3 (Piloto) */}
         <Route
+          path="/mis-viajes"
+          element={
+            <RoleRoute allowedRoles={['LEVEL_3']}>
+              <MisViajesPage />
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="/pilot/navegacion/:id"
+          element={
+            <RoleRoute allowedRoles={['LEVEL_3']}>
+              <NavegacionViajePage />
+            </RoleRoute>
+          }
+        />
+        <Route
           path="/viajes"
           element={
             <RoleRoute allowedRoles={['LEVEL_1']}>
               <ViajesPage />
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="/viajes/:id"
+          element={
+            <RoleRoute allowedRoles={['LEVEL_1', 'LEVEL_2', 'LEVEL_3']}>
+              <ViajeDetallePage />
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="/monitoreo"
+          element={
+            <RoleRoute allowedRoles={['LEVEL_1']}>
+              <MonitoreoPage />
             </RoleRoute>
           }
         />

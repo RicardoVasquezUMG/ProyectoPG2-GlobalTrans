@@ -5,12 +5,17 @@ from datetime import datetime, timezone
 
 class ViajeService:
     @staticmethod
-    async def get_all():
+    async def get_all(user_id: str = None):
         try:
             # We join with cargamentos, vehicles, tiendas, and users to get descriptive fields
-            response = get_supabase_admin().table("viajes").select(
-                "*, cargamentos!inner(furgon_id, furgones(numero_contenedor)), vehicles!inner(placas), tiendas!inner(nombre), users!inner(full_name)"
-            ).order("created_at", desc=True).execute()
+            query = get_supabase_admin().table("viajes").select(
+                "*, cargamentos!inner(furgon_id, furgones(numero_contenedor)), vehicles!inner(placas), tiendas!inner(nombre, latitud, longitud), users!inner(full_name)"
+            )
+            
+            if user_id:
+                query = query.eq("usuario_id", user_id)
+                
+            response = query.order("created_at", desc=True).execute()
             
             data = response.data
             for row in data:
@@ -24,6 +29,8 @@ class ViajeService:
                 row["numero_contenedor"] = furgon.get("numero_contenedor") if furgon else None
                 row["placa_vehiculo"] = vehiculo.get("placas") if vehiculo else None
                 row["nombre_tienda"] = tienda.get("nombre") if tienda else None
+                row["tienda_latitud"] = tienda.get("latitud") if tienda else None
+                row["tienda_longitud"] = tienda.get("longitud") if tienda else None
                 row["nombre_piloto"] = usuario.get("full_name") if usuario else None
                 
             return data
