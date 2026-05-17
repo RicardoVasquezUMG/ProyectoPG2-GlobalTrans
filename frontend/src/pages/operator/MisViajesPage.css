@@ -1,50 +1,21 @@
 .mis-viajes-page {
-  max-width: 800px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
-.viajes-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.viaje-card {
-  border-radius: var(--border-radius);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  background-color: var(--surface-card);
-  overflow: hidden;
+.pilot-hero {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-700) 100%);
 }
 
 .viaje-card .p-card-body {
-  padding: 1.5rem;
-}
-
-.viaje-card-header {
-  border-bottom: 1px solid var(--surface-border);
-  padding-bottom: 1rem;
-}
-
-.detail-item {
+  padding: 1rem;
+  height: 100%;
   display: flex;
-  align-items: center;
-  color: var(--text-color-secondary);
+  flex-direction: column;
 }
 
-.start-btn {
-  border-radius: 8px;
-  font-weight: bold;
-  font-size: 1.1rem;
+.viaje-card .p-card-content {
+  flex-grow: 1;
+  padding: 0;
 }
 
-.no-viajes-msg {
-  text-align: center;
-  padding: 4rem 2rem;
-  background-color: var(--surface-card);
-  border-radius: var(--border-radius);
-  border: 1px dashed var(--surface-border);
-}
-
-.no-viajes-msg h3 {
-  margin: 1rem 0 0.5rem;
-}

@@ -18,7 +18,7 @@ async def registrar_checkpoint(
     user=Depends(require_roles(UserRole.LEVEL_1, UserRole.LEVEL_2, UserRole.LEVEL_3))
 ):
     """Registra un checkpoint/evento en un viaje y actualiza su estado."""
-    return await TrackingService.registrar_checkpoint(viaje_id, data, user_id=user.get("id"))
+    return await TrackingService.registrar_checkpoint(viaje_id, data, user_id=user.get("id") if user else None)
 
 
 @router.post("/{viaje_id}/posicion", response_model=dict)

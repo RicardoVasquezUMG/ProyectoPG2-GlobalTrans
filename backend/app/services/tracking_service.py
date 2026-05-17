@@ -40,10 +40,14 @@ class TrackingService:
                 raise BadRequestError(detail="Error al crear el checkpoint")
 
             # Actualizar el estado del viaje
-            sb.table("viajes").update({
+            update_data = {
                 "estado": data.estado,
                 "updated_at": datetime.now(timezone.utc).isoformat()
-            }).eq("id", viaje_id).execute()
+            }
+            if data.estado == "entregado":
+                update_data["fecha_llegada_real"] = datetime.now(timezone.utc).isoformat()
+
+            sb.table("viajes").update(update_data).eq("id", viaje_id).execute()
 
             return checkpoint_resp.data[0]
 
@@ -62,8 +66,8 @@ class TrackingService:
             viaje_resp = sb.table("viajes").select("id, estado").eq("id", viaje_id).execute()
             if not viaje_resp.data:
                 raise BadRequestError(detail="Viaje no encontrado")
-            if viaje_resp.data[0]["estado"] not in ("en_ruta", "en_aduana"):
-                raise BadRequestError(detail="Solo se puede actualizar la posición de viajes activos (en_ruta o en_aduana)")
+            if viaje_resp.data[0]["estado"] not in ("en_ruta", "en_aduana", "retrasado"):
+                raise BadRequestError(detail="Solo se puede actualizar la posición de viajes activos (en_ruta, en_aduana o retrasado)")
 
             posicion_data = {
                 "viaje_id": viaje_id,
@@ -123,14 +127,14 @@ class TrackingService:
 
     @staticmethod
     async def obtener_viajes_activos():
-        """Obtiene todos los viajes en estado activo (en_ruta, en_aduana) con su posición y datos del piloto."""
+        """Obtiene todos los viajes en estado activo (en_ruta, en_aduana, retrasado) con su posición y datos del piloto."""
         try:
             sb = get_supabase_admin()
 
             # Obtener viajes activos con joins
             resp = sb.table("viajes") \
                 .select("id, estado, fecha_plan_salida, observaciones, users!inner(full_name), vehicles!inner(placas), tiendas!inner(nombre, pais)") \
-                .in_("estado", ["en_ruta", "en_aduana"]) \
+                .in_("estado", ["en_ruta", "en_aduana", "retrasado"]) \
                 .order("fecha_plan_salida", desc=False) \
                 .execute()
 

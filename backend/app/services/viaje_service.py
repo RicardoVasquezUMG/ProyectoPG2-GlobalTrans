@@ -41,10 +41,42 @@ class ViajeService:
     async def create(data: ViajeCreate):
         try:
             insert_data = data.model_dump()
+            
             # Serialize datetime to isoformat
             if insert_data.get("fecha_plan_salida"):
-                insert_data["fecha_plan_salida"] = insert_data["fecha_plan_salida"].isoformat()
+                fecha_salida = insert_data["fecha_plan_salida"]
+                insert_data["fecha_plan_salida"] = fecha_salida.isoformat()
             
+                # Calculate ETA based on past trips to this store
+                from datetime import timedelta
+                avg_hours = 24.0 # Default if no history
+                
+                # Fetch past completed trips to this store
+                past_trips = get_supabase_admin().table("viajes")\
+                    .select("fecha_plan_salida, fecha_llegada_real")\
+                    .eq("tienda_id", insert_data["tienda_id"])\
+                    .not_.is_("fecha_llegada_real", "null")\
+                    .execute()
+                
+                if past_trips.data:
+                    total_hours = 0
+                    valid_trips = 0
+                    for trip in past_trips.data:
+                        try:
+                            s = datetime.fromisoformat(trip["fecha_plan_salida"].replace('Z', '+00:00'))
+                            e = datetime.fromisoformat(trip["fecha_llegada_real"].replace('Z', '+00:00'))
+                            if e > s:
+                                total_hours += (e - s).total_seconds() / 3600.0
+                                valid_trips += 1
+                        except:
+                            pass
+                    
+                    if valid_trips > 0:
+                        avg_hours = total_hours / valid_trips
+
+                # Set expected arrival time
+                insert_data["fecha_esperada_llegada"] = (fecha_salida + timedelta(hours=avg_hours)).isoformat()
+
             response = get_supabase_admin().table("viajes").insert(insert_data).execute()
             if not response.data:
                 raise BadRequestError(detail="Error al crear el viaje")

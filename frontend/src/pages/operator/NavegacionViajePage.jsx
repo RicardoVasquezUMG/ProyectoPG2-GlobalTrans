@@ -27,9 +27,9 @@ L.Icon.Default.mergeOptions({
 
 // Custom truck icon
 const truckIcon = new L.Icon({
-  iconUrl: 'https://cdn-icons-png.flaticon.com/512/751/751173.png',
-  iconSize: [40, 40],
-  iconAnchor: [20, 20],
+  iconUrl: 'https://cdn-icons-png.flaticon.com/512/12781/12781217.png',
+  iconSize: [60, 60],
+  iconAnchor: [30, 30],
 });
 
 export default function NavegacionViajePage() {
@@ -41,16 +41,21 @@ export default function NavegacionViajePage() {
   const [viaje, setViaje] = useState(null);
   const [aduanas, setAduanas] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+
   // Posición en tiempo real
   const [currentPosition, setCurrentPosition] = useState(null);
   const watchIdRef = useRef(null);
   const lastSyncRef = useRef(0);
+  const mapRef = useRef(null);
 
   // Modales
   const [showAduanaModal, setShowAduanaModal] = useState(false);
   const [showIncidenteModal, setShowIncidenteModal] = useState(false);
   const [showPausaModal, setShowPausaModal] = useState(false);
+
+  // UI Toggles
+  const [showActions, setShowActions] = useState(false);
+  const [showItinerary, setShowItinerary] = useState(false);
 
   // Formularios
   const [aduanaData, setAduanaData] = useState({ tipo: '', aduana_id: '', notas: '' });
@@ -61,7 +66,7 @@ export default function NavegacionViajePage() {
   useEffect(() => {
     loadData();
     startTracking();
-    
+
     return () => {
       stopTracking();
     };
@@ -84,7 +89,7 @@ export default function NavegacionViajePage() {
 
     } catch (error) {
       showError('Error al cargar datos del viaje');
-      navigate('/pilot/mis-viajes');
+      navigate('/mis-viajes');
     } finally {
       setLoading(false);
     }
@@ -100,7 +105,7 @@ export default function NavegacionViajePage() {
       (position) => {
         const { latitude, longitude, speed, heading, accuracy } = position.coords;
         setCurrentPosition([latitude, longitude]);
-        
+
         // Sync with backend max every 15 seconds to avoid spamming
         const now = Date.now();
         if (now - lastSyncRef.current > 15000) {
@@ -138,7 +143,7 @@ export default function NavegacionViajePage() {
   const handleRegisterEvent = async (estado, ubicacion, notas, showAlert = true) => {
     try {
       setIsSubmitting(true);
-      
+
       // Intentar obtener última posición para el checkpoint
       let lat = currentPosition ? currentPosition[0] : null;
       let lng = currentPosition ? currentPosition[1] : null;
@@ -152,11 +157,11 @@ export default function NavegacionViajePage() {
       });
 
       if (showAlert) showSuccess('Evento registrado correctamente');
-      
+
       // Refrescar viaje para ver nuevo estado
       const vData = await obtenerViajeDetalle(id);
       setViaje(vData);
-      
+
       return true;
     } catch (error) {
       showError('Error al registrar el evento');
@@ -168,20 +173,20 @@ export default function NavegacionViajePage() {
 
   const submitAduana = async () => {
     if (!aduanaData.tipo || !aduanaData.aduana_id) return showError('Selecciona tipo y aduana');
-    
+
     const aduanaObj = aduanas.find(a => a.value === aduanaData.aduana_id);
     const nombreAduana = aduanaObj ? aduanaObj.label : 'Aduana';
-    
+
     // Si llega a aduana, el estado es EN_ADUANA. Si sale, es EN_RUTA
     const estadoViaje = aduanaData.tipo === EVENT_TYPES.ADUANA_LLEGADA ? ESTADOS_VIAJE.EN_ADUANA : ESTADOS_VIAJE.EN_RUTA;
-    
+
     const success = await handleRegisterEvent(estadoViaje, nombreAduana, `EVENTO: ${aduanaData.tipo} | ${aduanaData.notas}`);
     if (success) setShowAduanaModal(false);
   };
 
   const submitIncidente = async () => {
     if (!incidenteData.tipo) return showError('Selecciona el tipo de incidente');
-    
+
     // Incidentes ponen el estado en RETRASADO
     const success = await handleRegisterEvent(ESTADOS_VIAJE.RETRASADO, 'En Ruta (Incidente)', `EVENTO: ${incidenteData.tipo} | ${incidenteData.notas}`);
     if (success) setShowIncidenteModal(false);
@@ -189,7 +194,7 @@ export default function NavegacionViajePage() {
 
   const submitPausa = async () => {
     if (!pausaData.tipo) return showError('Selecciona el motivo de la pausa');
-    
+
     // Pausas mantienen el estado EN_RUTA
     const success = await handleRegisterEvent(ESTADOS_VIAJE.EN_RUTA, 'En Ruta (Pausa)', `EVENTO: ${pausaData.tipo} | ${pausaData.notas}`);
     if (success) setShowPausaModal(false);
@@ -198,14 +203,16 @@ export default function NavegacionViajePage() {
   const handleEndTrip = async () => {
     if (window.confirm("¿Estás seguro de finalizar el viaje e indicar que la carga fue entregada?")) {
       const success = await handleRegisterEvent(ESTADOS_VIAJE.ENTREGADO, 'Destino', 'Viaje Finalizado');
-      if (success) navigate('/pilot/mis-viajes');
+      if (success) navigate('/mis-viajes');
     }
   };
 
-  const openInWaze = () => {
-    // Si tuviéramos lat/lng destino de la tienda podríamos pasarlo,
-    // Por ahora pasamos un placeholder o abrimos Waze genérico.
-    window.open(`https://waze.com/ul?q=${encodeURIComponent(viaje?.direccion_tienda || viaje?.nombre_tienda)}&navigate=yes`, '_blank');
+
+
+  const handleRecenter = () => {
+    if (mapRef.current && currentPosition) {
+      mapRef.current.setView(currentPosition, 18, { animate: true });
+    }
   };
 
   if (loading || !viaje) return <LoadingSpinner />;
@@ -213,11 +220,12 @@ export default function NavegacionViajePage() {
   return (
     <div className="navegacion-page">
       <div className="map-container">
-        <MapContainer 
-          center={currentPosition || [14.6349, -90.5069]} 
-          zoom={13} 
+        <MapContainer
+          center={currentPosition || [14.6349, -90.5069]}
+          zoom={13}
           style={{ height: '100%', width: '100%' }}
           zoomControl={false}
+          ref={mapRef}
         >
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -229,63 +237,102 @@ export default function NavegacionViajePage() {
             </Marker>
           )}
           {currentPosition && viaje?.tienda_latitud && viaje?.tienda_longitud && (
-            <RoutingControl 
-              start={currentPosition} 
-              end={[parseFloat(viaje.tienda_latitud), parseFloat(viaje.tienda_longitud)]} 
+            <RoutingControl
+              start={currentPosition}
+              end={[parseFloat(viaje.tienda_latitud), parseFloat(viaje.tienda_longitud)]}
+              showItinerary={showItinerary}
             />
           )}
         </MapContainer>
 
+        {/* Botón Flotante para Re-centrar el Mapa */}
+        {currentPosition && (
+          <div className="absolute z-5" style={{ bottom: showActions ? '220px' : '90px', right: '20px', zIndex: 1000, transition: 'bottom 0.3s' }}>
+            <Button
+              icon="pi pi-compass"
+              className="p-button-rounded p-button-secondary p-button-lg shadow-4"
+              onClick={handleRecenter}
+              aria-label="Centrar Mapa"
+            />
+          </div>
+        )}
+
         {/* Panel Superior: Status e Info */}
-        <div className="status-panel p-3">
+        <div className="status-panel p-2">
           <div className="flex justify-content-between align-items-center">
             <div>
               <h3 className="m-0 text-white">Destino: {viaje.nombre_tienda}</h3>
-              <p className="m-0 text-gray-300 text-sm">Estado actual: {viaje.estado.replace('_', ' ').toUpperCase()}</p>
+              <p className="m-0 text-white text-sm">Estado actual: {viaje.estado.replace('_', ' ').toUpperCase()}</p>
             </div>
-            <Button icon="pi pi-external-link" rounded text className="text-white" onClick={openInWaze} aria-label="Abrir en Waze" />
+
           </div>
         </div>
 
+        {/* Botón flotante para mostrar acciones */}
+        {!showActions && (
+          <div className="flex justify-content-center w-full absolute bottom-0 mb-4 z-5" style={{ zIndex: 1000 }}>
+            <Button
+              label="Opciones del Viaje"
+              icon="pi pi-chevron-up"
+              className="p-button-rounded p-button-lg shadow-6"
+              onClick={() => setShowActions(true)}
+            />
+          </div>
+        )}
+
         {/* Action Bottom Sheet */}
-        <div className="action-sheet p-3">
-          <div className="grid grid-nogutter gap-2">
-            <div className="col-12 flex gap-2">
-              <Button label="Aduana" icon="pi pi-building" className="flex-1 p-button-warning" onClick={() => setShowAduanaModal(true)} />
-              <Button label="Pausa" icon="pi pi-coffee" className="flex-1 p-button-secondary" onClick={() => setShowPausaModal(true)} />
+        {showActions && (
+          <div className="action-sheet p-3 shadow-4 border-round-top-xl transition-all duration-300" style={{ backgroundColor: 'var(--surface-card)', opacity: 1 }}>
+            <div className="flex flex-column align-items-center mb-3 w-full">
+              <Button
+                icon="pi pi-chevron-down"
+                rounded
+                text
+                className="p-button-lg mb-2"
+                onClick={() => setShowActions(false)}
+                aria-label="Ocultar"
+                style={{ width: '3rem', height: '3rem' }}
+              />
+              <h4 className="m-0 w-full text-center">Opciones de Viaje</h4>
             </div>
-            <div className="col-12 flex gap-2 mt-2">
-              <Button label="Incidente" icon="pi pi-exclamation-triangle" className="flex-1 p-button-danger" onClick={() => setShowIncidenteModal(true)} />
-              <Button label="Finalizar" icon="pi pi-check" className="flex-1 p-button-success" onClick={handleEndTrip} disabled={viaje.estado === ESTADOS_VIAJE.ENTREGADO} />
+            <div className="grid grid-nogutter gap-2">
+              <div className="col-12 flex gap-2">
+                <Button label="Aduana" icon="pi pi-building" className="flex-1 p-button-warning" onClick={() => setShowAduanaModal(true)} />
+                <Button label="Pausa" icon="pi pi-coffee" className="flex-1 p-button-secondary" onClick={() => setShowPausaModal(true)} />
+              </div>
+              <div className="col-12 flex gap-2 mt-2">
+                <Button label="Incidente" icon="pi pi-exclamation-triangle" className="flex-1 p-button-danger" onClick={() => setShowIncidenteModal(true)} />
+                <Button label="Finalizar" icon="pi pi-check" className="flex-1 p-button-success" onClick={handleEndTrip} disabled={viaje.estado === ESTADOS_VIAJE.ENTREGADO} />
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Modal Aduana */}
       <Dialog header="Registro en Aduana" visible={showAduanaModal} style={{ width: '90vw', maxWidth: '400px' }} onHide={() => setShowAduanaModal(false)}>
         <div className="flex flex-column gap-3 mt-2">
-          <Dropdown 
+          <Dropdown
             options={[
               { label: 'Llegada a Aduana', value: EVENT_TYPES.ADUANA_LLEGADA },
               { label: 'Salida de Aduana', value: EVENT_TYPES.ADUANA_SALIDA }
-            ]} 
-            value={aduanaData.tipo} 
-            onChange={(e) => setAduanaData({...aduanaData, tipo: e.value})} 
-            placeholder="Seleccione el evento" 
+            ]}
+            value={aduanaData.tipo}
+            onChange={(e) => setAduanaData({ ...aduanaData, tipo: e.value })}
+            placeholder="Seleccione el evento"
           />
-          <Dropdown 
-            options={aduanas} 
-            value={aduanaData.aduana_id} 
-            onChange={(e) => setAduanaData({...aduanaData, aduana_id: e.value})} 
-            placeholder="Seleccione la Aduana" 
+          <Dropdown
+            options={aduanas}
+            value={aduanaData.aduana_id}
+            onChange={(e) => setAduanaData({ ...aduanaData, aduana_id: e.value })}
+            placeholder="Seleccione la Aduana"
             filter
           />
-          <InputTextarea 
-            placeholder="Notas (opcional)..." 
-            value={aduanaData.notas} 
-            onChange={(e) => setAduanaData({...aduanaData, notas: e.target.value})} 
-            rows={3} 
+          <InputTextarea
+            placeholder="Notas (opcional)..."
+            value={aduanaData.notas}
+            onChange={(e) => setAduanaData({ ...aduanaData, notas: e.target.value })}
+            rows={3}
           />
           <Button label="Registrar" loading={isSubmitting} onClick={submitAduana} />
         </div>
@@ -294,21 +341,21 @@ export default function NavegacionViajePage() {
       {/* Modal Incidente */}
       <Dialog header="Reportar Incidente" visible={showIncidenteModal} style={{ width: '90vw', maxWidth: '400px' }} onHide={() => setShowIncidenteModal(false)}>
         <div className="flex flex-column gap-3 mt-2">
-          <Dropdown 
+          <Dropdown
             options={[
               { label: EVENT_TYPES.INCIDENTE_MECANICO, value: EVENT_TYPES.INCIDENTE_MECANICO },
               { label: EVENT_TYPES.INCIDENTE_ACCIDENTE, value: EVENT_TYPES.INCIDENTE_ACCIDENTE },
               { label: EVENT_TYPES.INCIDENTE_TRAFICO, value: EVENT_TYPES.INCIDENTE_TRAFICO }
-            ]} 
-            value={incidenteData.tipo} 
-            onChange={(e) => setIncidenteData({...incidenteData, tipo: e.value})} 
-            placeholder="Tipo de Incidente" 
+            ]}
+            value={incidenteData.tipo}
+            onChange={(e) => setIncidenteData({ ...incidenteData, tipo: e.value })}
+            placeholder="Tipo de Incidente"
           />
-          <InputTextarea 
-            placeholder="Describa la situación..." 
-            value={incidenteData.notas} 
-            onChange={(e) => setIncidenteData({...incidenteData, notas: e.target.value})} 
-            rows={4} 
+          <InputTextarea
+            placeholder="Describa la situación..."
+            value={incidenteData.notas}
+            onChange={(e) => setIncidenteData({ ...incidenteData, notas: e.target.value })}
+            rows={4}
           />
           <Button label="Reportar" severity="danger" loading={isSubmitting} onClick={submitIncidente} />
         </div>
@@ -317,21 +364,21 @@ export default function NavegacionViajePage() {
       {/* Modal Pausa */}
       <Dialog header="Registrar Pausa" visible={showPausaModal} style={{ width: '90vw', maxWidth: '400px' }} onHide={() => setShowPausaModal(false)}>
         <div className="flex flex-column gap-3 mt-2">
-          <Dropdown 
+          <Dropdown
             options={[
               { label: EVENT_TYPES.PAUSA_ALIMENTACION, value: EVENT_TYPES.PAUSA_ALIMENTACION },
               { label: EVENT_TYPES.PAUSA_DESCANSO, value: EVENT_TYPES.PAUSA_DESCANSO },
               { label: EVENT_TYPES.PAUSA_COMBUSTIBLE, value: EVENT_TYPES.PAUSA_COMBUSTIBLE }
-            ]} 
-            value={pausaData.tipo} 
-            onChange={(e) => setPausaData({...pausaData, tipo: e.value})} 
-            placeholder="Motivo de la pausa" 
+            ]}
+            value={pausaData.tipo}
+            onChange={(e) => setPausaData({ ...pausaData, tipo: e.value })}
+            placeholder="Motivo de la pausa"
           />
-          <InputTextarea 
-            placeholder="Notas adicionales..." 
-            value={pausaData.notas} 
-            onChange={(e) => setPausaData({...pausaData, notas: e.target.value})} 
-            rows={2} 
+          <InputTextarea
+            placeholder="Notas adicionales..."
+            value={pausaData.notas}
+            onChange={(e) => setPausaData({ ...pausaData, notas: e.target.value })}
+            rows={2}
           />
           <Button label="Registrar Pausa" severity="secondary" loading={isSubmitting} onClick={submitPausa} />
         </div>

@@ -13,6 +13,8 @@ class ViajeBase(BaseModel):
     tienda_id: str
     usuario_id: str
     estado: Optional[str] = 'planificado'
+    fecha_esperada_llegada: Optional[datetime] = None
+    fecha_llegada_real: Optional[datetime] = None
 
 class ViajeCreate(ViajeBase):
     pass

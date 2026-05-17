@@ -24,9 +24,10 @@ export function getMenuItems(role) {
       { key: 'admin-tiendas', label: 'Tiendas', icon: 'pi pi-shop', path: '/tiendas' },
       { key: 'admin-cargamentos', label: 'Cargamentos', icon: 'pi pi-box', path: '/cargamentos' },
       { key: 'admin-viajes', label: 'Viajes', icon: 'pi pi-compass', path: '/viajes' },
-      { key: 'admin-monitoreo', label: 'Monitoreo', icon: 'pi pi-map-marker', path: '/monitoreo' },
       
       { key: 'section-ops', label: 'Módulo Analista', isDivider: true },
+      { key: 'admin-monitoreo', label: 'Monitoreo Global', icon: 'pi pi-map', path: '/monitoreo' },
+      { key: 'admin-auditoria', label: 'Auditoría y Rutas', icon: 'pi pi-chart-line', path: '/auditoria' },
       { key: 'operator-schedules', label: 'Cronogramas', icon: 'pi pi-calendar', path: '/cronogramas' },
       
       { key: 'section-clients', label: 'Módulo Piloto', isDivider: true },
@@ -35,6 +36,8 @@ export function getMenuItems(role) {
   } else if (role === 'LEVEL_2') {
     items.push(
       { key: 'section-ops', label: 'Analista', isDivider: true },
+      { key: 'admin-monitoreo', label: 'Monitoreo Global', icon: 'pi pi-map', path: '/monitoreo' },
+      { key: 'admin-auditoria', label: 'Auditoría y Rutas', icon: 'pi pi-chart-line', path: '/auditoria' },
       { key: 'operator-schedules', label: 'Cronogramas', icon: 'pi pi-calendar', path: '/cronogramas' }
     );
   } else if (role === 'LEVEL_3') {
