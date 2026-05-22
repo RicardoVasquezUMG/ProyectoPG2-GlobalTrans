@@ -1,0 +1,29 @@
+Formulario: Adjuntar Documento
+Campo	Valor Por Defecto	Tipo de Campo	Observación
+Tipo de Documento	--------------	Requerido / Selección	Tipo de documento que se va a subir
+Archivo	--------------	Requerido / Archivo	El archivo a adjuntar
+Adjuntar Documento	--------------	Submit	Habilitado si toda la información pasó las validaciones
+
+Formulario: Crear Cargamento
+Campo	Valor Por Defecto	Tipo de Campo	Observación
+Furgón	--------------	Requerido / Selección	Furgón asociado al cargamento
+Campaña	--------------	Requerido / Selección	Campaña a la que pertenece
+Crear Cargamento	--------------	Submit	Habilitado si toda la información pasó las validaciones
+
+Formulario: Crear Viaje
+Campo	Valor Por Defecto	Tipo de Campo	Observación
+Fecha Plan Salida	--------------	Requerido / Entrada (Fecha)	Fecha planificada para el viaje
+Observaciones	--------------	Opcional / Entrada	Detalles adicionales del viaje
+Cargamento	--------------	Requerido / Selección	El cargamento a transportar
+Vehículo	--------------	Requerido / Selección	El vehículo asignado
+Tienda	--------------	Requerido / Selección	La tienda de destino
+Piloto / Usuario	--------------	Requerido / Selección	El conductor asignado
+Crear Viaje	--------------	Submit	Habilitado si toda la información pasó las validaciones
+
+Formulario: Campaña
+Campo	Valor Por Defecto	Tipo de Campo	Observación
+Fecha Inicio	--------------	Requerido / Entrada (Fecha)	Fecha en la que inicia la campaña
+Fecha Fin	--------------	Requerido / Entrada (Fecha)	Fecha en la que finaliza
+Descripción	--------------	Requerido / Entrada	Detalles descriptivos de la campaña
+Estado	Activo (true)	Requerido / Booleano (Switch)	Indica si está activa
+Crear Campaña	--------------	Submit	Habilitado si toda la información pasó las validaciones

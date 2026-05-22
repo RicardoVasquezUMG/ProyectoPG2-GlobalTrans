@@ -1,0 +1,150 @@
+# Casos de Uso (REQ001 - REQ006)
+
+A continuación se detalla cada caso de uso utilizando el flujo interactivo entre el Usuario (Actor) y el Sistema, incluyendo las excepciones correspondientes según el estándar formal:
+
+--------------------------------------------------
+Id. Requerimiento: REQ001
+Id. Caso de Uso: CU001
+Descripción: Autenticación de un usuario para acceder al sistema.
+
+Secuencia Normal: 
+1. El usuario accede a la pantalla de inicio de sesión.
+2. El sistema solicita las credenciales de acceso.
+3. El usuario ingresa a través de su correo electrónico y su contraseña de tipo alfanumérica.
+4. El sistema verifica el usuario, contraseña y estado en la base de datos. (Excepción 1)
+5. El sistema concede el acceso y muestra la pantalla principal.
+
+Excepciones: 
+1. Datos incorrectos o usuario inactivo.
+   • El sistema verifica que las credenciales no coinciden o que el usuario está inactivo.
+   • El sistema muestra un mensaje de advertencia indicando incompatibilidad o error en los datos.
+   • El sistema restablece los campos.
+   • Ir al paso 3 de la secuencia normal.
+
+--------------------------------------------------
+Id. Requerimiento: REQ002
+Id. Caso de Uso: CU002
+Descripción: Gestión de Usuarios (Creación, actualización, listado).
+
+Secuencia Normal: 
+1. El usuario accede al módulo de usuarios.
+2. El sistema muestra los usuarios registrados filtrando por estado y rol.
+3. El usuario selecciona la opción para registrar (o actualizar) un usuario.
+4. El sistema muestra el formulario de datos.
+5. El usuario ingresa los datos personales y asigna el rol (Administrador, Operador, Cliente).
+6. El sistema verifica que los datos obligatorios estén completos y el correo no exista. (Excepción 1)
+7. El sistema guarda la información en la base de datos.
+8. El sistema muestra el listado actualizado.
+
+Excepciones: 
+1. Faltan datos o el correo ya existe.
+   • El sistema verifica que falta un campo obligatorio o que el correo ya está registrado.
+   • El sistema muestra un error indicando el fallo.
+   • Ir al paso 5 de la secuencia normal.
+
+--------------------------------------------------
+Id. Requerimiento: REQ003
+Id. Caso de Uso: CU003
+Descripción: Gestión de Furgón
+
+Secuencia Normal: 
+1. El operador accede al módulo de furgones.
+2. El sistema visualiza el inventario y el historial de viajes de los furgones.
+3. El operador selecciona registrar un furgón.
+4. El sistema muestra los campos requeridos.
+5. El operador ingresa placa, capacidad, tipo y asigna un estado operativo (disponible, en ruta, mantenimiento).
+6. El sistema verifica que la placa no esté duplicada y el estado sea válido. (Excepción 1)
+7. El sistema guarda el furgón.
+8. El sistema actualiza el inventario y confirma la operación exitosa.
+
+Excepciones: 
+1. Placa duplicada o estado inválido.
+   • El sistema verifica que la placa ya está registrada en el inventario.
+   • El sistema rechaza la operación y muestra un mensaje de error.
+   • Ir al paso 5 de la secuencia normal.
+
+--------------------------------------------------
+Id. Requerimiento: REQ004
+Id. Caso de Uso: CU004
+Descripción: Gestión de Vehículo (Cabezal)
+
+Secuencia Normal: 
+1. El usuario accede al módulo de vehículos.
+2. El sistema lista y filtra los vehículos por estado y mantenimientos pendientes (mostrando el cronograma).
+3. El usuario selecciona registrar un vehículo.
+4. El sistema presenta el formulario correspondiente.
+5. El usuario registra marca, modelo, año, número de placa, número de chasis y motor, y asigna un estado.
+6. El sistema verifica los datos de identificación única. (Excepción 1)
+7. El sistema guarda la información técnica y actualiza el estado.
+8. El sistema confirma el registro.
+
+Excepciones: 
+1. Duplicidad de chasis o placa.
+   • El sistema verifica que el número de chasis o la placa ya se encuentran en el sistema.
+   • El sistema cancela el registro y notifica la duplicidad al usuario.
+   • Ir al paso 5 de la secuencia normal.
+
+--------------------------------------------------
+Id. Requerimiento: REQ005
+Id. Caso de Uso: CU005
+Descripción: Gestión de Cargamento
+
+Secuencia Normal: 
+1. El operador accede al módulo de cargamentos.
+2. El sistema muestra la interfaz de registro y estados.
+3. El operador selecciona registrar mercancía.
+4. El sistema despliega el formulario.
+5. El operador ingresa peso, volumen, tipo y categoriza la mercancía (perecedera, frágil, peligrosa, general).
+6. El operador asocia el cargamento a un cliente específico y a un viaje programado, actualizando su estado.
+7. El sistema verifica que el peso/volumen sea apto para la capacidad del furgón del viaje. (Excepción 1)
+8. El sistema registra el cargamento y genera el documento de respaldo o guía de remisión.
+9. El sistema confirma la creación.
+
+Excepciones: 
+1. Exceso de capacidad.
+   • El sistema verifica que el peso/volumen excede la capacidad del furgón asignado.
+   • El sistema lanza una alerta.
+   • El sistema no permite la asociación del cargamento.
+   • Ir al paso 5 de la secuencia normal.
+
+--------------------------------------------------
+Id. Requerimiento: REQ006
+Id. Caso de Uso: CU006
+Descripción: Carga, vinculación y control de vencimientos de documentos digitales.
+
+Secuencia Normal: 
+1. El usuario accede a la sección de documentos.
+2. El sistema muestra los documentos previamente adjuntados.
+3. El usuario selecciona cargar documento.
+4. El sistema habilita el explorador de archivos.
+5. El usuario sube el archivo (PDF/Imagen), lo vincula a una entidad (viaje, vehículo, conductor) y establece fechas de vencimiento.
+6. El sistema verifica el tamaño y formato del archivo. (Excepción 1)
+7. El sistema almacena el documento y programa el envío de alertas de vencimiento.
+8. El sistema muestra el documento en pantalla para ser consultado o descargado.
+
+Excepciones: 
+1. Archivo no compatible o muy grande.
+   • El sistema verifica que el archivo excede el tamaño máximo permitido o no es formato PDF/Imagen.
+   • El sistema aborta la subida y muestra un mensaje de error.
+   • Ir al paso 5 de la secuencia normal.
+
+--------------------------------------------------
+
+# Instrucciones para dibujar los Diagramas de Casos de Uso (UML)
+
+Ya que harás **un diagrama independiente por cada caso de uso**, sigue estos pasos para dibujar cada uno de los 6 diagramas (en herramientas como draw.io, Lucidchart o StarUML):
+
+1. **Límites del Sistema (System Boundary):**
+   - Para cada diagrama, dibuja un rectángulo grande en el centro.
+   - En la parte superior del rectángulo, escribe el nombre del módulo (Ej. **"Sistema Logístico - Login"**).
+
+2. **El Caso de Uso (Use Case):**
+   - Dentro del rectángulo, dibuja **un solo óvalo**.
+   - Adentro del óvalo, escribe la acción principal (Ej. *Iniciar Sesión*, *Registrar Usuario*, etc.).
+
+3. **Los Actores (Actors):**
+   - Fuera del rectángulo, dibuja la figura de "hombre de palo" (stickman) que corresponda a quien realiza esa acción.
+   - Por ejemplo, en el diagrama de CU002 pondrías al **Administrador**. En el de CU003 pondrías al **Operador**.
+
+4. **Líneas de Asociación (Association):**
+   - Traza una línea sólida (sin flecha) que conecte al Actor con el único óvalo que está dentro de ese rectángulo.

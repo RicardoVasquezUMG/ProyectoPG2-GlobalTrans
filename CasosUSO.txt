@@ -1,0 +1,215 @@
+### Instrucciones completas — cómo crear **un diagrama UML de Caso de Uso por cada CU** (CU001 → CU006)  
+
+A continuación tienes una guía paso a paso para dibujar cada uno de los seis diagramas en la herramienta que prefieras (draw.io, Lucidchart, StarUML, etc.). Cada diagrama seguirá el mismo patrón estructural que el ejemplo del cajero automático, pero con los pasos y excepciones específicos de cada caso de uso de tu proyecto.
+
+---
+
+## 1. Estructura básica que se repite en **todos** los diagramas  
+
+1. **Crear el Límite del Sistema (System Boundary)**  
+   * Dibuja un **rectángulo grande** centrado en el lienzo.  
+   * En la parte superior escribe el **nombre del módulo** al que pertenece el caso de uso (p.ej. “Sistema Logístico – Login”, “Sistema Logístico – Gestión de Usuarios”, etc.).  
+
+2. **Añadir el Actor**  
+   * A la izquierda o a la derecha del rectángulo coloca el **símbolo de “hombre de palo”**.  
+   * Escribe el nombre del actor que inicia la interacción (p.ej. **Usuario**, **Administrador**, **Operador**).  
+
+3. **Crear los Óvalos (Use Cases)**  
+   * Dentro del rectángulo dibuja **un óvalo por cada paso de la Secuencia Normal**.  
+   * Alinéalos **verticalmente** y **centrados** para que el flujo sea fácil de seguir.  
+   * En cada óvalo escribe el nombre del paso, usando verbos en infinitivo y manteniendo la redacción lo más corta posible (ej. “Ingresar correo”, “Verificar credenciales”).  
+
+4. **Conectar el Actor con los Óvalos**  
+   * Dibuja una **línea sólida (asociación)** que vincule al actor con **el primer óvalo** (el primer paso).  
+   * Si el actor participa directamente en pasos intermedios (p.ej. volver a ingresar PIN), también puedes conectar la línea a esos óvalos, pero **la conexión mínima requerida** es al primer paso.  
+
+5. **Representar el Flujo entre Óvalos**  
+   * Usa **líneas discontinuas con flecha** que conecten cada óvalo con el siguiente, indicando la dirección del flujo (de arriba → abajo).  
+   * Si un paso tiene una **excepción**, dibuja una **línea punteada** que salga del óvalo del paso donde ocurre la verificación y se dirija a otro óvalo que represente la **excepción** o al propio actor, según corresponda.  
+
+6. **Añadir Extensiones / Excepciones (opcional)**  
+   * Para cada excepción crea un **óvalo separado** fuera del rectángulo (pero cerca del paso que la genera) y marca la relación con `<<extend>>` o `<<include>>` según corresponda.  
+   * En la nota del diagrama (caja de texto) indica brevemente la condición de la excepción y el paso al que regresa (p.ej. “Ir al paso 3”).  
+
+7. **Etiquetado y estilo**  
+   * Usa **fuente sans‑serif (p.ej. Inter, Roboto)** y **tamaño 12 pt** para el texto.  
+   * Aplica **color de relleno** claro (p.ej. `#F0F4FF`) a los óvalos y **borde** de 1 px.  
+   * Mantén **espaciado de 30 px** entre óvalos para que la diagramación sea limpia.  
+
+---
+
+## 2. Diagrama por Caso de Uso (CU)
+
+### CU001 – **Autenticación (Login)**
+| Paso | Texto del óvalo | Excepción (si la hay) |
+|------|----------------|-----------------------|
+| 1 | Acceder a la pantalla de inicio de sesión | — |
+| 2 | Introducir correo electrónico | — |
+| 3 | Introducir contraseña alfanumérica | — |
+| 4 | Verificar credenciales y estado (Excepción 1) | **Tarjeta no activa / Credenciales incorrectas** |
+| 5 | Conceder acceso y mostrar pantalla principal | — |
+
+**Pasos para dibujar el diagrama**  
+1. Rectángulo → *“Sistema Logístico – Login”*  
+2. Actor → **Usuario** a la izquierda.  
+3. Dentro del rectángulo, dibuja 5 óvalos con los textos de la tabla (de arriba a abajo).  
+4. Conecta al Actor con el óvalo **1**.  
+5. Conecta óvalos 1 → 2 → 3 → 4 → 5 con flechas discontinuas.  
+6. Dibuja un óvalo **Excepción 1** fuera del rectángulo (texto: “Credenciales incorrectas o usuario inactivo”).  
+   * Conecta óvalo 4 a **Excepción 1** con línea punteada y etiqueta `<<extend>>`.  
+   * Desde **Excepción 1** dibuja una flecha de retorno al óvalo 3 (texto “Ir al paso 3”).  
+
+---
+
+### CU002 – **Gestión de Usuarios**
+| Paso | Texto del óvalo | Excepción |
+|------|----------------|-----------|
+| 1 | Acceder al módulo de usuarios | — |
+| 2 | Listar/filtrar usuarios por estado y rol | — |
+| 3 | Seleccionar registro o actualización | — |
+| 4 | Mostrar formulario de datos | — |
+| 5 | Ingresar datos y asignar rol | **Faltan datos / Correo duplicado (Excepción 1)** |
+| 6 | Guardar información | — |
+| 7 | Mostrar listado actualizado | — |
+| 8 | Desactivar o eliminar usuario | — |
+
+**Pasos para dibujar**  
+1. Rectángulo → *“Sistema Logístico – Gestión de Usuarios”*  
+2. Actor → **Administrador**.  
+3. Dibujar 8 óvalos (uno por cada paso).  
+4. Conectar a **Administrador** → óvalo 1 y luego 1 → 2 → … → 8 con flechas.  
+5. Óvalo **Excepción 1** fuera del rectángulo (“Datos obligatorios faltantes o correo existente”).  
+   * Conecta óvalo 5 a **Excepción 1** (`<<extend>>`).  
+   * Flecha de retorno a óvalo 5 (“Ir al paso 5”).  
+
+---
+
+### CU003 – **Gestión de Furgón**
+| Paso | Texto del óvalo | Excepción |
+|------|----------------|-----------|
+| 1 | Acceder al módulo de furgones | — |
+| 2 | Visualizar inventario y historial | — |
+| 3 | Seleccionar “Registrar furgón” | — |
+| 4 | Mostrar formulario | — |
+| 5 | Ingresar placa, capacidad, tipo y estado operativo | **Placa duplicada / Estado inválido (Excepción 1)** |
+| 6 | Verificar unicidad de placa y validez de estado | — |
+| 7 | Guardar furgón | — |
+| 8 | Confirmar operación y actualizar inventario | — |
+
+**Pasos para dibujar**  
+1. Rectángulo → *“Sistema Logístico – Gestión de Furgón”*  
+2. Actor → **Operador**.  
+3. Ocho óvalos en orden.  
+4. Conectar al operador → óvalo 1 → … → óvalo 8.  
+5. Óvalo **Excepción 1** fuera del rectángulo (“Placa ya registrada o estado no permitido”).  
+   * Conectar óvalo 5 a **Excepción 1** (`<<extend>>`).  
+   * Flecha de retorno a óvalo 5 (“Ir al paso 5”).  
+
+---
+
+### CU004 – **Gestión de Vehículo (Cabezal)**
+| Paso | Texto del óvalo | Excepción |
+|------|----------------|-----------|
+| 1 | Acceder al módulo de vehículos | — |
+| 2 | Listar/filtrar vehículos por estado y mantenimientos | — |
+| 3 | Seleccionar “Registrar vehículo” | — |
+| 4 | Mostrar formulario | — |
+| 5 | Ingresar marca, modelo, año, placa, chasis y motor | **Duplicidad de placa o chasis (Excepción 1)** |
+| 6 | Verificar datos únicos | — |
+| 7 | Guardar información técnica | — |
+| 8 | Confirmar registro | — |
+
+**Pasos para dibujar**  
+1. Rectángulo → *“Sistema Logístico – Gestión de Vehículos”*  
+2. Actor → **Usuario** (puede ser Administrador/Operador).  
+3. Dibujar 8 óvalos, conectarlos linealmente.  
+4. Óvalo **Excepción 1** fuera del rectángulo (“Placa o chasis ya existen”).  
+   * Conectar óvalo 5 a **Excepción 1** (`<<extend>>`).  
+   * Flecha de retorno a óvalo 5 (“Ir al paso 5”).  
+
+---
+
+### CU005 – **Gestión de Cargamento**
+| Paso | Texto del óvalo | Excepción |
+|------|----------------|-----------|
+| 1 | Acceder al módulo de cargamentos | — |
+| 2 | Mostrar interfaz de registro y estados | — |
+| 3 | Seleccionar “Registrar mercancía” | — |
+| 4 | Mostrar formulario de datos | — |
+| 5 | Ingresar peso, volumen, tipo y categorizar mercancía | — |
+| 6 | Asociar cargamento a cliente y viaje | **Capacidad del furgón insuficiente (Excepción 1)** |
+| 7 | Verificar capacidad del furgón | — |
+| 8 | Registrar cargamento y generar guía de remisión | — |
+| 9 | Confirmar creación | — |
+
+**Pasos para dibujar**  
+1. Rectángulo → *“Sistema Logístico – Gestión de Cargamento”*  
+2. Actor → **Operador**.  
+3. Nueve óvalos, conectados secuencialmente.  
+4. Óvalo **Excepción 1** fuera del rectángulo (“Peso/volumen supera la capacidad del furgón”).  
+   * Conectar óvalo 6 a **Excepción 1** (`<<extend>>`).  
+   * Flecha de retorno a óvalo 5 (“Ir al paso 5”).  
+
+---
+
+### CU006 – **Gestión de Documentos**
+| Paso | Texto del óvalo | Excepción |
+|------|----------------|-----------|
+| 1 | Acceder a la sección de documentos | — |
+| 2 | Mostrar documentos adjuntos | — |
+| 3 | Seleccionar “Cargar documento” | — |
+| 4 | Habilitar explorador de archivos | — |
+| 5 | Subir archivo (PDF/Imagen) y vincular a entidad | **Archivo no compatible o demasiado grande (Excepción 1)** |
+| 6 | Verificar tamaño y formato | — |
+| 7 | Almacenar documento y programar alertas de vencimiento | — |
+| 8 | Mostrar documento para consulta/descarga | — |
+
+**Pasos para dibujar**  
+1. Rectángulo → *“Sistema Logístico – Gestión de Documentos”*  
+2. Actor → **Usuario** (puede ser Administrador u Operador).  
+3. Ocho óvalos, conectados en orden.  
+4. Óvalo **Excepción 1** fuera del rectángulo (“Formato no admitido o archivo supera el límite”).  
+   * Conectar óvalo 5 a **Excepción 1** (`<<extend>>`).  
+   * Flecha de retorno a óvalo 5 (“Ir al paso 5”).  
+
+---
+
+## 3. Resumen visual de cada diagrama (esquema textual)
+
+```
++-----------------------------------------------------+
+| Sistema Logístico – <MÓDULO>                       |
+|                                                     |
+|   (Actor)  ------------>  (Paso 1)  --> (Paso 2) … |
+|                                                     |
+|   ^                                                 |
+|   |                                                 |
+|   |---<<extend>>---  (Excepción X)   <--- regresar  |
++-----------------------------------------------------+
+```
+
+- **Actor** → línea sólida → primer óvalo.  
+- **Flechas** → entre óvalos (secuencia normal).  
+- **Excepción** → óvalo punteado fuera del rectángulo, conectado al paso que la genera con `<<extend>>`.  
+- **Retorno** → flecha desde la excepción al paso indicado (normalmente al paso de entrada de datos).  
+
+---
+
+## 4. Checklist rápido antes de guardar el diagrama  
+
+| ✔️ | Acción |
+|---|--------|
+| 1 | Límite del sistema con nombre correcto. |
+| 2 | Actor bien identificado y posicionado. |
+| 3 | Cada paso de la **Secuencia Normal** tiene su propio óvalo, escrito en infinitivo y breve. |
+| 4 | Óvalos alineados verticalmente y con espaciado constante. |
+| 5 | Líneas de asociación del actor → primer óvalo. |
+| 6 | Flechas de flujo entre óvalos (discontinuas con flecha). |
+| 7 | Cada excepción tiene su propio óvalo fuera del rectángulo, etiquetado `<<extend>>`. |
+| 8 | Flechas de retorno que indican *“Ir al paso X”*. |
+| 9 | Uso de tipografía legible (sans‑serif) y colores suaves. |
+|10 | Exportar como PNG / SVG para incluir en la documentación. |
+
+---
+
+**¡Listo!** Con estas instrucciones podrás reproducir, para cada caso de uso, un diagrama tan claro y estructurado como el del cajero automático que mostraste como ejemplo. Si necesitas que añada algún detalle visual (por ejemplo, notas de «include» o colores diferentes por módulo) avísame y lo ajusto.

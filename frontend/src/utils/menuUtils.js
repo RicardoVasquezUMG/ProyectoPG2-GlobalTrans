@@ -27,24 +27,18 @@ export function getMenuItems(role) {
       
       { key: 'section-ops', label: 'Módulo Analista', isDivider: true },
       { key: 'admin-monitoreo', label: 'Monitoreo Global', icon: 'pi pi-map', path: '/monitoreo' },
-      { key: 'admin-auditoria', label: 'Auditoría y Rutas', icon: 'pi pi-chart-line', path: '/auditoria' },
-      { key: 'operator-schedules', label: 'Cronogramas', icon: 'pi pi-calendar', path: '/cronogramas' },
-      
-      { key: 'section-clients', label: 'Módulo Piloto', isDivider: true },
-      { key: 'client-docs', label: 'Documentos', icon: 'pi pi-file', path: '/documentos' }
+      { key: 'admin-auditoria', label: 'Auditoría y Rutas', icon: 'pi pi-chart-line', path: '/auditoria' }
     );
   } else if (role === 'LEVEL_2') {
     items.push(
       { key: 'section-ops', label: 'Analista', isDivider: true },
       { key: 'admin-monitoreo', label: 'Monitoreo Global', icon: 'pi pi-map', path: '/monitoreo' },
-      { key: 'admin-auditoria', label: 'Auditoría y Rutas', icon: 'pi pi-chart-line', path: '/auditoria' },
-      { key: 'operator-schedules', label: 'Cronogramas', icon: 'pi pi-calendar', path: '/cronogramas' }
+      { key: 'admin-auditoria', label: 'Auditoría y Rutas', icon: 'pi pi-chart-line', path: '/auditoria' }
     );
   } else if (role === 'LEVEL_3') {
     items.push(
       { key: 'section-clients', label: 'Piloto', isDivider: true },
-      { key: 'client-trips', label: 'Mis Viajes', icon: 'pi pi-compass', path: '/mis-viajes' },
-      { key: 'client-docs', label: 'Mis Documentos', icon: 'pi pi-file', path: '/documentos' }
+      { key: 'client-trips', label: 'Mis Viajes', icon: 'pi pi-compass', path: '/mis-viajes' }
     );
   }
 

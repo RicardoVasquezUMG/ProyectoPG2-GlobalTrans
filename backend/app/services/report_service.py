@@ -58,11 +58,47 @@ class ReportService:
                     
             avg_transit_time = round(total_transit_hours / delivered_count, 1) if delivered_count > 0 else 0
             
+            # Datos reales para el gráfico (últimos 7 días)
+            from datetime import timedelta
+            chart_labels = []
+            entregas_data = []
+            retrasos_data = []
+            
+            # Generar ultimos 7 dias
+            for i in range(6, -1, -1):
+                d = (now - timedelta(days=i)).strftime("%a")
+                chart_labels.append(d)
+                entregas_data.append(0)
+                retrasos_data.append(0)
+                
+            for v in viajes:
+                # Contar entregas
+                if v["estado"] == "entregado" and v.get("fecha_llegada_real"):
+                    try:
+                        d_real = datetime.fromisoformat(v["fecha_llegada_real"].replace('Z', '+00:00'))
+                        days_ago = (now.date() - d_real.date()).days
+                        if 0 <= days_ago <= 6:
+                            idx = 6 - days_ago
+                            entregas_data[idx] += 1
+                    except:
+                        pass
+                # Contar retrasos (asumimos incidentes o estado retrasado en esos dias)
+                # Como aproximación, usamos created_at o updated_at, o si esta retrasado lo sumamos a hoy
+                # Para mayor precisión usamos update_at si esta retrasado
+                if v["estado"] == "retrasado" and v.get("fecha_plan_salida"):
+                    # simplificación: lo ponemos en el dia de hoy
+                    retrasos_data[6] += 1
+            
             return {
                 "activos": activos,
                 "entregados": entregados,
                 "retrasados": retrasados,
-                "tiempo_promedio_horas": avg_transit_time
+                "tiempo_promedio_horas": avg_transit_time,
+                "chart_data": {
+                    "labels": chart_labels,
+                    "entregas": entregas_data,
+                    "retrasos": retrasos_data
+                }
             }
             
         except Exception as e:

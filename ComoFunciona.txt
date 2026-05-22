@@ -1,0 +1,137 @@
+Id. Requerimiento: REQ001
+Nombre del Requerimiento: Login
+Clasificación o prioridad: 1
+
+No. Func.	Funcionalidad
+001	Permitirá el acceso a los usuarios.
+002	Permitirá el ingreso a través de un correo electrónico.
+003	Permitirá ingresar la contraseña del usuario, la cual será de tipo alfanumérica.
+004	Se verificará el usuario, contraseña y estado en la base de datos.
+005	En caso de incompatibilidad o error en los datos ingresados, se mostrará un mensaje de advertencia y se restablecerán los campos para intentar nuevamente.
+
+--------------------------------------------------
+
+Id. Requerimiento: REQ002
+Nombre del Requerimiento: Gestión de Usuarios
+Clasificación o prioridad: 1
+
+No. Func.	Funcionalidad
+001	Permitirá registrar nuevos usuarios en el sistema con sus datos personales y credenciales.
+002	Permitirá actualizar la información de un usuario existente.
+003	Permitirá asignar roles (Administrador, Operador, Cliente) a cada usuario.
+004	Permitirá visualizar el detalle completo del perfil de un usuario específico.
+005	Permitirá desactivar o eliminar lógicamente a un usuario.
+006	Permitirá listar y buscar usuarios registrados filtrando por estado y rol.
+007	Permitirá restablecer o enviar un enlace de recuperación de contraseña al correo del usuario.
+
+--------------------------------------------------
+
+Id. Requerimiento: REQ003
+Nombre del Requerimiento: Gestión de Furgón
+Clasificación o prioridad: 1
+
+No. Func.	Funcionalidad
+001	Permitirá registrar furgones con sus características físicas (placa, capacidad, tipo).
+002	Permitirá asignar y modificar el estado operativo del furgón (disponible, en ruta, mantenimiento).
+003	Permitirá actualizar los datos generales del furgón registrado.
+004	Permitirá registrar mantenimientos específicos realizados al furgón, incluyendo fechas y costos.
+005	Permitirá visualizar el historial de viajes asignados al furgón.
+006	Permitirá dar de baja un furgón del inventario.
+
+--------------------------------------------------
+
+Id. Requerimiento: REQ004
+Nombre del Requerimiento: Funcionalidad Requerida - Gestión de Vehículo (Cabezal)
+Clasificación o prioridad: 1
+
+No. Func.	Funcionalidad
+001	Permitirá registrar vehículos detallando marca, modelo, año y número de placa.
+002	Permitirá registrar el número de chasis y motor para identificación vehicular.
+003	Permitirá controlar el estado actual del vehículo (disponible, en ruta, en taller).
+004	Permitirá llevar un registro detallado de los mantenimientos preventivos y correctivos realizados al vehículo.
+005	Permitirá actualizar la información técnica y administrativa del vehículo.
+006	Permitirá visualizar un calendario o cronograma de próximos mantenimientos preventivos.
+007	Permitirá listar y filtrar vehículos por estado, características y mantenimientos pendientes.
+
+--------------------------------------------------
+
+Id. Requerimiento: REQ005
+Nombre del Requerimiento: Funcionalidad Requerida - Gestión de Cargamento
+Clasificación o prioridad: 2
+
+No. Func.	Funcionalidad
+001	Permitirá registrar los datos del cargamento, incluyendo peso, volumen y tipo de mercancía.
+002	Permitirá categorizar la mercancía (perecedera, frágil, peligrosa, general).
+003	Permitirá asociar el cargamento a un cliente específico y a un viaje programado.
+004	Permitirá actualizar el estado del cargamento (recepcionado, en tránsito, entregado).
+005	Permitirá generar un documento de respaldo o guía de remisión para el cargamento.
+006	Permitirá registrar incidencias, observaciones o daños reportados durante el traslado, incluyendo fotografías.
+
+--------------------------------------------------
+
+Id. Requerimiento: REQ006
+Nombre del Requerimiento: Funcionalidad Requerida - Gestión de Documentos
+Clasificación o prioridad: 2
+
+No. Func.	Funcionalidad
+001	Permitirá cargar y almacenar documentos en formato digital (PDF, imágenes) al sistema.
+002	Permitirá asociar los documentos a registros específicos como viajes, vehículos, conductores o cargamentos.
+003	Permitirá consultar, descargar o visualizar los documentos previamente adjuntados.
+004	Permitirá establecer fechas de vencimiento para documentos legales (licencias, pólizas) con envío de alertas.
+005	Permitirá actualizar versiones de documentos o eliminarlos manteniendo un historial de cambios.
+
+--------------------------------------------------
+
+Id. Requerimiento: REQ007
+Nombre del Requerimiento: Funcionalidad Requerida - Gestión de Viaje
+Clasificación o prioridad: 2
+
+No. Func.	Funcionalidad
+001	Permitirá planificar un viaje definiendo punto de origen, destino y ruta a seguir.
+002	Permitirá estimar los costos operativos asociados al viaje planificado.
+003	Permitirá asignar a un viaje los recursos necesarios: vehículo, furgón, conductor y cargamento.
+004	Permitirá cambiar el estado del viaje (programado, en curso, finalizado, cancelado).
+005	Permitirá registrar puntos de control, novedades o paradas durante la ejecución del viaje.
+006	Permitirá registrar las fechas y horas reales de salida y llegada para compararlas con las estimadas.
+007	Permitirá generar una liquidación o reporte final de incidencias al concluir el viaje.
+
+--------------------------------------------------
+
+Id. Requerimiento: REQ008
+Nombre del Requerimiento: Funcionalidad Requerida - Gestión de Tienda / Sucursal
+Clasificación o prioridad: 3
+
+No. Func.	Funcionalidad
+001	Permitirá registrar tiendas o sucursales con su información detallada de ubicación y contacto.
+002	Permitirá modificar y actualizar los datos de la tienda en cualquier momento.
+003	Permitirá listar y visualizar todas las tiendas activas en el sistema mediante un mapa o listado.
+004	Permitirá asociar o desasociar personal administrativo y logístico a una tienda específica.
+005	Permitirá desactivar tiendas que cesen sus operaciones o cierren temporalmente.
+
+--------------------------------------------------
+
+Id. Requerimiento: REQ009
+Nombre del Requerimiento: Funcionalidad Requerida - Gestión de Campaña
+Clasificación o prioridad: 3
+
+No. Func.	Funcionalidad
+001	Permitirá crear campañas (promocionales o logísticas) definiendo nombre, descripción, fecha de inicio y fin.
+002	Permitirá asociar clientes, tiendas o rutas específicas a una campaña determinada.
+003	Permitirá definir objetivos comerciales, metas o presupuestos asignados a la campaña.
+004	Permitirá registrar el avance o estado actual de la campaña (planificada, activa, pausada, finalizada).
+005	Permitirá visualizar métricas en tiempo real sobre el alcance e impacto de la campaña.
+006	Permitirá generar un reporte detallado y exportable de resultados al concluir la campaña.
+
+--------------------------------------------------
+
+Requisitos No Funcionales
+
+ID	Categoría	Descripción
+RNF001	Seguridad	El sistema debe encriptar las contraseñas y utilizar tokens JWT para la autenticación segura.
+RNF002	Rendimiento	El sistema debe responder a las solicitudes de los usuarios en un tiempo máximo de 2 segundos.
+RNF003	Disponibilidad	El sistema debe garantizar una disponibilidad del 99.9% durante el horario operativo logístico.
+RNF004	Usabilidad	La interfaz web debe ser responsiva y adaptarse correctamente a dispositivos móviles, tablets y PCs.
+RNF005	Escalabilidad	La arquitectura debe soportar un incremento en la cantidad de usuarios concurrentes y volumen de datos sin degradarse.
+RNF006	Mantenibilidad	El código fuente debe seguir convenciones estrictas y estar modularizado para facilitar futuras actualizaciones.
+RNF007	Compatibilidad	La aplicación debe funcionar correctamente en las versiones más recientes de Chrome, Firefox, Safari y Edge.
+RNF008	Respaldos	El sistema de base de datos debe generar respaldos automáticos periódicos para evitar pérdidas de información.

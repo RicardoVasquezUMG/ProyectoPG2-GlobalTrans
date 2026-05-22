@@ -30,13 +30,9 @@ import ViajesPage from '../pages/admin/ViajesPage';
 import AduanasPage from '../pages/admin/AduanasPage';
 import ViajeDetallePage from '../pages/admin/ViajeDetallePage';
 
-// Level 2 (Operador/Analista)
-import ScheduleCrudPage from '../pages/operator/ScheduleCrudPage';
-
 // Level 3 (Piloto)
 import MisViajesPage from '../pages/operator/MisViajesPage';
 import NavegacionViajePage from '../pages/operator/NavegacionViajePage';
-import DocumentsCrudPage from '../pages/client/DocumentsCrudPage';
 
 export default function AppRouter() {
   return (
@@ -74,13 +70,9 @@ export default function AppRouter() {
         <Route path="/viajes" element={<RoleRoute allowedRoles={[ROLES.LEVEL_1]}><ViajesPage /></RoleRoute>} />
         <Route path="/viajes/:id" element={<RoleRoute allowedRoles={[ROLES.LEVEL_1, ROLES.LEVEL_2, ROLES.LEVEL_3]}><ViajeDetallePage /></RoleRoute>} />
 
-        {/* Rutas protegidas por rol: Nivel 2 (Analista) */}
-        <Route path="/cronogramas" element={<RoleRoute allowedRoles={[ROLES.LEVEL_1, ROLES.LEVEL_2]}><ScheduleCrudPage /></RoleRoute>} />
-
         {/* Rutas protegidas por rol: Nivel 3 (Piloto) */}
         <Route path="/mis-viajes" element={<RoleRoute allowedRoles={[ROLES.LEVEL_3]}><MisViajesPage /></RoleRoute>} />
         <Route path="/pilot/navegacion/:id" element={<RoleRoute allowedRoles={[ROLES.LEVEL_3]}><NavegacionViajePage /></RoleRoute>} />
-        <Route path="/documentos" element={<RoleRoute allowedRoles={[ROLES.LEVEL_1, ROLES.LEVEL_3]}><DocumentsCrudPage /></RoleRoute>} />
       </Route>
 
       {/* Redirección por defecto */}
