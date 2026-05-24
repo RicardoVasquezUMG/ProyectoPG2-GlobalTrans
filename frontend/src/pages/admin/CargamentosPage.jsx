@@ -28,17 +28,17 @@ export default function CargamentosPage() {
   const [editDialogVisible, setEditDialogVisible] = useState(false);
   const [uploadDialogVisible, setUploadDialogVisible] = useState(false);
   const [docsDialogVisible, setDocsDialogVisible] = useState(false);
-  
+
   const emptyCargamento = { furgon_id: '', campania_id: '' };
   const [newCargamento, setNewCargamento] = useState({ ...emptyCargamento });
   const [editingCargamento, setEditingCargamento] = useState(null);
-  
+
   const [selectedCargamento, setSelectedCargamento] = useState(null);
   const [cargamentoDocs, setCargamentoDocs] = useState([]);
   const [loadingDocs, setLoadingDocs] = useState(false);
   const [documentType, setDocumentType] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
-  
+
   const [saving, setSaving] = useState(false);
   const fileInputRef = useRef(null);
 
@@ -53,8 +53,8 @@ export default function CargamentosPage() {
 
   const documentTypes = [
     { label: 'Factura', value: 'Factura' },
-    { label: 'Guía', value: 'Guía' },
-    { label: 'Manifiesto', value: 'Manifiesto' },
+    { label: 'Carta de Porte', value: 'Carta de Porte' },
+    { label: 'DUCA', value: 'DUCA' },
     { label: 'Otro', value: 'Otro' }
   ];
 
@@ -110,7 +110,12 @@ export default function CargamentosPage() {
   const hideCreateDialog = () => setCreateDialogVisible(false);
 
   const openEditDialog = (cargamento) => {
-    setEditingCargamento({ id: cargamento.id, estado: cargamento.estado });
+    setEditingCargamento({
+      id: cargamento.id,
+      furgon_id: cargamento.furgon_id,
+      campania_id: cargamento.campania_id,
+      estado: cargamento.estado
+    });
     setEditDialogVisible(true);
   };
   const hideEditDialog = () => {
@@ -168,18 +173,22 @@ export default function CargamentosPage() {
   };
 
   const saveEditedCargamento = async () => {
-    if (!editingCargamento.estado) {
-      showError('El estado es obligatorio');
+    if (!editingCargamento.furgon_id || !editingCargamento.campania_id || !editingCargamento.estado) {
+      showError('Furgón, Campaña y Estado son obligatorios');
       return;
     }
     setSaving(true);
     try {
-      await updateCargamento(editingCargamento.id, { estado: editingCargamento.estado });
-      showSuccess('Estado actualizado correctamente');
+      await updateCargamento(editingCargamento.id, {
+        furgon_id: editingCargamento.furgon_id,
+        campania_id: editingCargamento.campania_id,
+        estado: editingCargamento.estado
+      });
+      showSuccess('Cargamento actualizado correctamente');
       hideEditDialog();
       loadData();
     } catch (error) {
-      showError('Error al actualizar el estado');
+      showError('Error al actualizar el cargamento');
     } finally {
       setSaving(false);
     }
@@ -267,12 +276,25 @@ export default function CargamentosPage() {
     });
   };
 
+  const getDocSeverity = (tipo) => {
+    switch (tipo) {
+      case 'Factura':
+        return 'success';
+      case 'Carta de Porte':
+        return 'info';
+      case 'DUCA':
+        return 'warning';
+      case 'Otro':
+        return 'secondary';
+    }
+  };
+
   const docsTemplate = (rowData) => {
     if (!rowData.documentos || rowData.documentos.length === 0) return <span className="text-500 text-sm">Ninguno</span>;
     return (
       <div className="flex flex-wrap gap-1">
         {rowData.documentos.map((tipo, i) => (
-          <Tag key={i} value={tipo} severity="info" />
+          <Tag key={i} value={tipo} severity={getDocSeverity(tipo)} />
         ))}
       </div>
     );
@@ -362,11 +384,11 @@ export default function CargamentosPage() {
         </div>
       </Dialog>
 
-      {/* Dialog Editar Estado */}
+      {/* Dialog Editar Cargamento */}
       <Dialog
         visible={editDialogVisible}
         style={{ width: '450px' }}
-        header="Editar Estado de Cargamento"
+        header="Editar Cargamento"
         modal
         className="p-fluid"
         footer={(
@@ -380,8 +402,38 @@ export default function CargamentosPage() {
         {editingCargamento && (
           <div className="flex flex-column gap-4 pt-2">
             <div className="field">
-              <label htmlFor="estado" className="font-bold">Estado</label>
-              <Dropdown id="estado" value={editingCargamento.estado} options={estadosPermitidos} onChange={(e) => setEditingCargamento({ ...editingCargamento, estado: e.value })} placeholder="Seleccionar Estado" />
+              <label htmlFor="edit_furgon" className="font-bold">Furgón</label>
+              <Dropdown
+                id="edit_furgon"
+                value={editingCargamento.furgon_id}
+                options={furgones}
+                optionLabel="numero_contenedor"
+                optionValue="id"
+                onChange={(e) => setEditingCargamento({ ...editingCargamento, furgon_id: e.value })}
+                placeholder="Seleccionar Furgón"
+              />
+            </div>
+            <div className="field">
+              <label htmlFor="edit_campania" className="font-bold">Campaña</label>
+              <Dropdown
+                id="edit_campania"
+                value={editingCargamento.campania_id}
+                options={campanias}
+                optionLabel="descripcion"
+                optionValue="id"
+                onChange={(e) => setEditingCargamento({ ...editingCargamento, campania_id: e.value })}
+                placeholder="Seleccionar Campaña"
+              />
+            </div>
+            <div className="field">
+              <label htmlFor="edit_estado" className="font-bold">Estado</label>
+              <Dropdown
+                id="edit_estado"
+                value={editingCargamento.estado}
+                options={estadosPermitidos}
+                onChange={(e) => setEditingCargamento({ ...editingCargamento, estado: e.value })}
+                placeholder="Seleccionar Estado"
+              />
             </div>
           </div>
         )}
@@ -409,7 +461,7 @@ export default function CargamentosPage() {
           </div>
           <div className="field">
             <label className="font-bold">Archivo PDF</label>
-            <div 
+            <div
               className="border-2 border-dashed border-round p-5 text-center cursor-pointer flex flex-column align-items-center justify-content-center"
               style={{ borderColor: 'var(--primary-color)', minHeight: '180px', backgroundColor: 'var(--surface-ground)' }}
               onClick={() => fileInputRef.current && fileInputRef.current.click()}

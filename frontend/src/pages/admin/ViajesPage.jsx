@@ -229,49 +229,59 @@ export default function ViajesPage() {
         </DataTable>
       </div>
 
-      <Dialog visible={dialogVisible} style={{ width: '450px' }} header={isEdit ? 'Editar Viaje' : 'Nuevo Viaje'} modal className="p-fluid" onHide={hideDialog}>
-        <div className="field flex flex-column">
-          <label htmlFor="fecha_plan_salida">Fecha y Hora de Salida *</label>
-          <input
-            type="datetime-local"
-            id="fecha_plan_salida"
-            className="p-inputtext p-component"
-            value={formData.fecha_plan_salida ? new Date(formData.fecha_plan_salida.getTime() - formData.fecha_plan_salida.getTimezoneOffset() * 60000).toISOString().slice(0, 16) : ''}
-            onChange={(e) => {
-              const val = e.target.value;
-              setFormData({ ...formData, fecha_plan_salida: val ? new Date(val) : null });
-            }}
-          />
-        </div>
+      <Dialog
+        visible={dialogVisible}
+        style={{ width: '800px', maxWidth: '95vw' }}
+        header={isEdit ? 'Editar Viaje' : 'Nuevo Viaje'}
+        modal
+        className="p-fluid"
+        footer={(
+          <>
+            <Button label="Cancelar" icon="pi pi-times" text onClick={hideDialog} />
+            <Button label="Guardar" icon="pi pi-check" onClick={saveViaje} />
+          </>
+        )}
+        onHide={hideDialog}
+      >
+        <div className="grid formgrid pt-2">
+          <div className="col-12 md:col-6 field flex flex-column">
+            <label htmlFor="fecha_plan_salida" className="font-bold mb-2">Fecha y Hora de Salida *</label>
+            <input
+              type="datetime-local"
+              id="fecha_plan_salida"
+              className="p-inputtext p-component"
+              value={formData.fecha_plan_salida ? new Date(formData.fecha_plan_salida.getTime() - formData.fecha_plan_salida.getTimezoneOffset() * 60000).toISOString().slice(0, 16) : ''}
+              onChange={(e) => {
+                const val = e.target.value;
+                setFormData({ ...formData, fecha_plan_salida: val ? new Date(val) : null });
+              }}
+            />
+          </div>
 
-        <div className="field">
-          <label htmlFor="cargamento_id">Cargamento *</label>
-          <Dropdown id="cargamento_id" value={formData.cargamento_id} onChange={(e) => setFormData({ ...formData, cargamento_id: e.value })} options={cargamentos} optionLabel="id" optionValue="id" placeholder="Seleccione un cargamento" filter />
-        </div>
+          <div className="col-12 md:col-6 field">
+            <label htmlFor="cargamento_id" className="font-bold mb-2 block">Cargamento *</label>
+            <Dropdown id="cargamento_id" value={formData.cargamento_id} onChange={(e) => setFormData({ ...formData, cargamento_id: e.value })} options={cargamentos} optionLabel="id" optionValue="id" placeholder="Seleccione un cargamento" filter />
+          </div>
 
-        <div className="field">
-          <label htmlFor="vehiculo_id">Vehículo *</label>
-          <Dropdown id="vehiculo_id" value={formData.vehiculo_id} onChange={(e) => setFormData({ ...formData, vehiculo_id: e.value })} options={vehiculos} optionLabel="placas" optionValue="id" placeholder="Seleccione un vehículo" filter />
-        </div>
+          <div className="col-12 md:col-6 field">
+            <label htmlFor="vehiculo_id" className="font-bold mb-2 block">Vehículo *</label>
+            <Dropdown id="vehiculo_id" value={formData.vehiculo_id} onChange={(e) => setFormData({ ...formData, vehiculo_id: e.value })} options={vehiculos} optionLabel="placas" optionValue="id" placeholder="Seleccione un vehículo" filter />
+          </div>
 
-        <div className="field">
-          <label htmlFor="usuario_id">Piloto *</label>
-          <Dropdown id="usuario_id" value={formData.usuario_id} onChange={(e) => setFormData({ ...formData, usuario_id: e.value })} options={pilotos} optionLabel="full_name" optionValue="id" placeholder="Seleccione un piloto" filter />
-        </div>
+          <div className="col-12 md:col-6 field">
+            <label htmlFor="usuario_id" className="font-bold mb-2 block">Piloto *</label>
+            <Dropdown id="usuario_id" value={formData.usuario_id} onChange={(e) => setFormData({ ...formData, usuario_id: e.value })} options={pilotos} optionLabel="full_name" optionValue="id" placeholder="Seleccione un piloto" filter />
+          </div>
 
-        <div className="field">
-          <label htmlFor="tienda_id">Tienda Destino *</label>
-          <Dropdown id="tienda_id" value={formData.tienda_id} onChange={(e) => setFormData({ ...formData, tienda_id: e.value })} options={tiendas} optionLabel="nombre" optionValue="id" placeholder="Seleccione una tienda" filter />
-        </div>
+          <div className="col-12 md:col-6 field">
+            <label htmlFor="tienda_id" className="font-bold mb-2 block">Tienda Destino *</label>
+            <Dropdown id="tienda_id" value={formData.tienda_id} onChange={(e) => setFormData({ ...formData, tienda_id: e.value })} options={tiendas} optionLabel="nombre" optionValue="id" placeholder="Seleccione una tienda" filter />
+          </div>
 
-        <div className="field">
-          <label htmlFor="observaciones">Observaciones</label>
-          <InputTextarea id="observaciones" value={formData.observaciones} onChange={(e) => setFormData({ ...formData, observaciones: e.target.value })} rows={3} />
-        </div>
-
-        <div className="flex justify-content-end gap-2 mt-4">
-          <Button label="Cancelar" icon="pi pi-times" outlined onClick={hideDialog} />
-          <Button label="Guardar" icon="pi pi-check" onClick={saveViaje} />
+          <div className="col-12 md:col-6 field">
+            <label htmlFor="observaciones" className="font-bold mb-2 block">Observaciones</label>
+            <InputTextarea id="observaciones" value={formData.observaciones} onChange={(e) => setFormData({ ...formData, observaciones: e.target.value })} rows={2} autoResize={false} />
+          </div>
         </div>
       </Dialog>
 

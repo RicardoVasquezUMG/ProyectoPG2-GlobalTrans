@@ -44,7 +44,7 @@ class CargamentoService:
 
     @staticmethod
     async def update(cargamento_id: str, data: CargamentoUpdate):
-        update_data = data.model_dump()
+        update_data = data.model_dump(exclude_unset=True)
         if not update_data:
             return None
             

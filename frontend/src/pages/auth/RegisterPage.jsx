@@ -93,7 +93,7 @@ export default function RegisterPage() {
     <div className="w-full">
       <div className="text-center mb-4">
         <div className="inline-flex align-items-center justify-content-center bg-blue-500 text-white border-round-xl w-3rem h-3rem mb-2 shadow-2">
-          <i className="pi pi-user-plus text-xl" />
+          <i className="pi pi-user-plus text-xl" style={{ color: '#070707' }} />
         </div>
         <h2 className="text-900 text-2xl font-semibold mb-2">Crear cuenta</h2>
         <span className="text-600 text-sm">Completa los datos para registrarte</span>
@@ -111,7 +111,7 @@ export default function RegisterPage() {
               id="register-name"
               value={formData.full_name}
               onChange={(e) => handleChange('full_name', e.target.value)}
-              placeholder="Juan Pérez"
+              placeholder="Ej.Juan Ernesto Pérez González"
               className={errors.full_name ? 'p-invalid' : ''}
               autoComplete="name"
               autoFocus

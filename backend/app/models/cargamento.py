@@ -14,7 +14,9 @@ class CargamentoCreate(BaseModel):
     campania_id: str
 
 class CargamentoUpdate(BaseModel):
-    estado: EstadoCargamento
+    estado: Optional[EstadoCargamento] = None
+    furgon_id: Optional[str] = None
+    campania_id: Optional[str] = None
 
 class CargamentoRead(CargamentoBase):
     id: str

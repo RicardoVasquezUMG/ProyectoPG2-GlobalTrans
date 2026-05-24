@@ -59,7 +59,7 @@ export default function LoginPage() {
     <div className="w-full">
       <div className="text-center mb-5">
         <div className="inline-flex align-items-center justify-content-center bg-blue-500 text-white border-round-xl w-3rem h-3rem mb-3 shadow-2">
-          <i className="pi pi-globe text-xl" />
+          <i className="pi pi-globe text-xl" style={{ color: '#070707' }} />
         </div>
         <h2 className="text-900 text-2xl font-semibold mb-2">Iniciar sesión</h2>
         <span className="text-600 text-sm">Ingresa tus credenciales para acceder</span>

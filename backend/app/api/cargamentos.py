@@ -20,7 +20,7 @@ async def create_cargamento(data: CargamentoCreate, user = Depends(require_roles
 
 @router.patch("/{cargamento_id}", response_model=CargamentoRead)
 async def update_cargamento(cargamento_id: str, data: CargamentoUpdate, user = Depends(require_roles(UserRole.LEVEL_1))):
-    """Actualiza el estado de un cargamento existente."""
+    """Actualiza un cargamento existente."""
     return await CargamentoService.update(cargamento_id, data)
 
 @router.delete("/{cargamento_id}", status_code=status.HTTP_204_NO_CONTENT)
