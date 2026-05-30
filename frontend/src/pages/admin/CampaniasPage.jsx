@@ -24,6 +24,8 @@ export default function CampaniasPage() {
   const [filters, setFilters] = useState({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS }
   });
+  const [viewDialogVisible, setViewDialogVisible] = useState(false);
+  const [viewCampania, setViewCampania] = useState(null);
 
   const onGlobalFilterChange = (e) => {
     const value = e.target.value;
@@ -96,8 +98,10 @@ export default function CampaniasPage() {
         await updateCampania(editingCampania.id, payload);
         showSuccess('Campaña actualizada exitosamente');
       } else {
-        await createCampania(payload);
+        const created = await createCampania(payload);
         showSuccess('Campaña creada exitosamente');
+        setViewCampania(created);
+        setViewDialogVisible(true);
       }
       closeDialog();
       loadCampanias();
@@ -143,6 +147,13 @@ export default function CampaniasPage() {
     return rowData.estado ? 'Activo' : 'Inactivo';
   };
 
+  const idBodyTemplate = (rowData) => {
+    const maxLen = 12;
+    const code = rowData.id?.toString() ?? '';
+    const display = code.length > maxLen ? `${code.substring(0, maxLen)}...` : code;
+    return <span title={code}>{display}</span>;
+  };
+
   return (
     <div className="surface-card p-4 shadow-2 border-round">
       <div className="flex justify-content-between align-items-center mb-4">
@@ -163,10 +174,11 @@ export default function CampaniasPage() {
         rows={10}
         dataKey="id"
         filters={filters}
-        globalFilterFields={['descripcion']}
+        globalFilterFields={['id', 'descripcion']}
         responsiveLayout="scroll"
         emptyMessage="No se encontraron campañas."
       >
+        <Column field="id" header="ID Campaña" body={idBodyTemplate} sortable />
         <Column field="descripcion" header="Descripción" sortable />
         <Column field="fecha_inicio" header="Fecha Inicio" sortable body={(row) => dateBodyTemplate(row, 'fecha_inicio')} />
         <Column field="fecha_fin" header="Fecha Fin" sortable body={(row) => dateBodyTemplate(row, 'fecha_fin')} />
@@ -228,6 +240,26 @@ export default function CampaniasPage() {
               />
               <label htmlFor="estado">Activo</label>
             </div>
+          </div>
+        )}
+      </Dialog>
+
+      {/* Dialog para mostrar detalles de la campaña creada */}
+      <Dialog
+        visible={viewDialogVisible}
+        style={{ width: '600px' }}
+        header="Detalles de la Campaña Creada"
+        modal
+        footer={(<Button label="Aceptar" icon="pi pi-check" onClick={() => setViewDialogVisible(false)} />)}
+        onHide={() => setViewDialogVisible(false)}
+      >
+        {viewCampania && (
+          <div className="p-fluid" style={{ fontSize: '1.2rem' }}>
+            <div className="field"><label className="font-bold">ID Campaña: </label><span>{viewCampania.id}</span></div>
+            <div className="field"><label className="font-bold">Descripción: </label><span>{viewCampania.descripcion}</span></div>
+            <div className="field"><label className="font-bold">Fecha Inicio: </label><span>{viewCampania.fecha_inicio ? format(new Date(viewCampania.fecha_inicio), 'dd/MM/yyyy') : ''}</span></div>
+            <div className="field"><label className="font-bold">Fecha Fin: </label><span>{viewCampania.fecha_fin ? format(new Date(viewCampania.fecha_fin), 'dd/MM/yyyy') : ''}</span></div>
+            <div className="field"><label className="font-bold">Estado: </label><span>{viewCampania.estado ? 'Activo' : 'Inactivo'}</span></div>
           </div>
         )}
       </Dialog>

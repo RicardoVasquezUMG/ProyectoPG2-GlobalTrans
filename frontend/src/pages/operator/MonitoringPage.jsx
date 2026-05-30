@@ -14,10 +14,11 @@ const defaultIcon = new L.Icon({
   iconAnchor: [30, 30],
 });
 
-const alertIcon = new L.Icon({
-  iconUrl: 'https://cdn-icons-png.flaticon.com/512/7279/7279860.png', // Red truck / alert
-  iconSize: [45, 45],
-  iconAnchor: [22, 22],
+const alertIcon = new L.DivIcon({
+  className: 'breakdown-marker',
+  html: '<div style="background:#dc2626;color:#fff;border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 2px 8px rgba(0,0,0,0.4);border:2px solid #fff;"><i class="pi pi-exclamation-triangle"></i></div>',
+  iconSize: [38, 38],
+  iconAnchor: [19, 19],
 });
 
 export default function MonitoringPage() {

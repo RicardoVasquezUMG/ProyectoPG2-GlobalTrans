@@ -24,6 +24,9 @@ export default function VehiclesPage() {
   const [editingVehicle, setEditingVehicle] = useState(null);
   const [saving, setSaving] = useState(false);
   const [isNew, setIsNew] = useState(false);
+  // New state for view dialog after creation
+  const [viewDialogVisible, setViewDialogVisible] = useState(false);
+  const [viewVehicle, setViewVehicle] = useState(null);
 
   const { showSuccess, showError } = useToast();
 
@@ -105,8 +108,11 @@ export default function VehiclesPage() {
     setSaving(true);
     try {
       if (isNew) {
-        await createVehicle(editingVehicle);
+        const createdVehicle = await createVehicle(editingVehicle);
         showSuccess('Vehículo creado correctamente');
+        // Show details in a floating dialog
+        setViewVehicle(createdVehicle);
+        setViewDialogVisible(true);
       } else {
         await updateVehicle(editingVehicle.id, {
           tipo: editingVehicle.tipo,
@@ -167,6 +173,13 @@ export default function VehiclesPage() {
       </div>
     );
   };
+  const codeBodyTemplate = (rowData) => {
+    const maxLen = 12;
+    const code = rowData.id?.toString() ?? '';
+    const display = code.length > maxLen ? `${code.substring(0, maxLen)}...` : code;
+    return <span>{display}</span>;
+  };
+
 
   return (
     <div className="card">
@@ -178,11 +191,12 @@ export default function VehiclesPage() {
         rows={10}
         dataKey="id"
         filters={filters}
-        globalFilterFields={['tipo', 'placas', 'estado']}
+        globalFilterFields={['id', 'tipo', 'placas', 'estado']}
         header={renderHeader()}
         emptyMessage="No se encontraron vehículos."
         stripedRows
       >
+        <Column field="id" header="ID" body={codeBodyTemplate} sortable />
         <Column field="tipo" header="Tipo" sortable />
         <Column field="placas" header="Placas" sortable />
         <Column field="tonelaje" header="Tonelaje" body={tonelajeBodyTemplate} sortable />
@@ -208,35 +222,35 @@ export default function VehiclesPage() {
           <div className="flex flex-column gap-4 pt-2">
             <div className="field">
               <label htmlFor="tipo" className="font-bold">Tipo de Vehículo</label>
-              <InputText 
-                id="tipo" 
-                value={editingVehicle.tipo} 
-                onChange={(e) => setEditingVehicle({ ...editingVehicle, tipo: e.target.value })} 
-                placeholder="Ej. Camión, Furgón" 
-                required 
+              <InputText
+                id="tipo"
+                value={editingVehicle.tipo}
+                onChange={(e) => setEditingVehicle({ ...editingVehicle, tipo: e.target.value })}
+                placeholder="Ej. Camión, Furgón"
+                required
               />
             </div>
             <div className="field">
               <label htmlFor="placas" className="font-bold">Placas</label>
-              <InputText 
-                id="placas" 
-                value={editingVehicle.placas} 
-                onChange={(e) => setEditingVehicle({ ...editingVehicle, placas: e.target.value })} 
-                placeholder="Ej. C-123ABC" 
-                required 
+              <InputText
+                id="placas"
+                value={editingVehicle.placas}
+                onChange={(e) => setEditingVehicle({ ...editingVehicle, placas: e.target.value })}
+                placeholder="Ej. C-123ABC"
+                required
               />
             </div>
             <div className="field">
               <label htmlFor="tonelaje" className="font-bold">Tonelaje</label>
-              <InputNumber 
-                id="tonelaje" 
-                value={editingVehicle.tonelaje} 
-                onValueChange={(e) => setEditingVehicle({ ...editingVehicle, tonelaje: e.value })} 
-                mode="decimal" 
-                minFractionDigits={2} 
-                maxFractionDigits={2} 
-                suffix=" t" 
-                required 
+              <InputNumber
+                id="tonelaje"
+                value={editingVehicle.tonelaje}
+                onValueChange={(e) => setEditingVehicle({ ...editingVehicle, tonelaje: e.value })}
+                mode="decimal"
+                minFractionDigits={2}
+                maxFractionDigits={2}
+                suffix=" t"
+                required
               />
             </div>
             <div className="field">
@@ -249,6 +263,25 @@ export default function VehiclesPage() {
                 placeholder="Seleccione el estado"
               />
             </div>
+          </div>
+        )}
+      </Dialog>
+      {/* Dialog to display newly created vehicle details */}
+      <Dialog
+        visible={viewDialogVisible}
+        style={{ width: '600px' }}
+        header="Detalles del Vehículo Creado"
+        modal
+        footer={(<Button label="Aceptar" icon="pi pi-check" onClick={() => setViewDialogVisible(false)} />)}
+        onHide={() => setViewDialogVisible(false)}
+      >
+        {viewVehicle && (
+          <div className="p-fluid" style={{ fontSize: '1.2rem' }}>
+            <div className="field"><label className="font-bold">Código: </label><span>{viewVehicle.id}</span></div>
+            <div className="field"><label className="font-bold">Tipo: </label><span>{viewVehicle.tipo}</span></div>
+            <div className="field"><label className="font-bold">Placas: </label><span>{viewVehicle.placas}</span></div>
+            <div className="field"><label className="font-bold">Tonelaje: </label><span>{viewVehicle.tonelaje} t</span></div>
+            <div className="field"><label className="font-bold">Estado: </label><span>{viewVehicle.estado}</span></div>
           </div>
         )}
       </Dialog>

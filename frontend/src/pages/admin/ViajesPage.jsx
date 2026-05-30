@@ -43,6 +43,8 @@ export default function ViajesPage() {
   });
   const [isEdit, setIsEdit] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
+  const [viewDialogVisible, setViewDialogVisible] = useState(false);
+  const [viewViaje, setViewViaje] = useState(null);
   const { showSuccess, showError } = useToast();
 
   useEffect(() => {
@@ -121,8 +123,10 @@ export default function ViajesPage() {
         await updateViaje(selectedId, formData);
         showSuccess('Viaje actualizado exitosamente');
       } else {
-        await createViaje(formData);
+        const created = await createViaje(formData);
         showSuccess('Viaje creado exitosamente');
+        setViewViaje(created);
+        setViewDialogVisible(true);
       }
       setDialogVisible(false);
       loadData();
@@ -199,6 +203,20 @@ export default function ViajesPage() {
     );
   };
 
+  const idViajeBodyTemplate = (rowData) => {
+    const maxLen = 12;
+    const code = rowData.id?.toString() ?? '';
+    const display = code.length > maxLen ? `${code.substring(0, maxLen)}...` : code;
+    return <span title={code}>{display}</span>;
+  };
+
+  const idCargamentoBodyTemplate = (rowData) => {
+    const maxLen = 12;
+    const code = rowData.cargamento_id?.toString() ?? '';
+    const display = code.length > maxLen ? `${code.substring(0, maxLen)}...` : code;
+    return <span title={code}>{display}</span>;
+  };
+
   return (
     <div className="page-container">
       <div className="page-header flex justify-content-between align-items-center mb-4">
@@ -218,8 +236,8 @@ export default function ViajesPage() {
 
       <div className="card">
         <DataTable value={viajes} loading={loading} paginator rows={10} emptyMessage="No se encontraron viajes." globalFilter={globalFilter}>
-          <Column field="id" header="ID Viaje" sortable />
-          <Column field="cargamento_id" header="ID Cargamento" sortable />
+          <Column field="id" header="ID Viaje" body={idViajeBodyTemplate} sortable />
+          <Column field="cargamento_id" header="ID Cargamento" body={idCargamentoBodyTemplate} sortable />
           <Column field="placa_vehiculo" header="Vehículo" sortable />
           <Column field="nombre_piloto" header="Piloto" sortable />
           <Column field="nombre_tienda" header="Destino (Tienda)" sortable />
@@ -283,6 +301,31 @@ export default function ViajesPage() {
             <InputTextarea id="observaciones" value={formData.observaciones} onChange={(e) => setFormData({ ...formData, observaciones: e.target.value })} rows={2} autoResize={false} />
           </div>
         </div>
+      </Dialog>
+
+      {/* Dialog para mostrar detalles del viaje creado */}
+      <Dialog
+        visible={viewDialogVisible}
+        style={{ width: '650px' }}
+        header="Detalles del Viaje Creado"
+        modal
+        footer={(<Button label="Aceptar" icon="pi pi-check" onClick={() => setViewDialogVisible(false)} />)}
+        onHide={() => setViewDialogVisible(false)}
+      >
+        {viewViaje && (
+          <div className="p-fluid" style={{ fontSize: '1.2rem' }}>
+            <div className="field"><label className="font-bold">ID Viaje: </label><span>{viewViaje.id}</span></div>
+            <div className="field"><label className="font-bold">ID Cargamento: </label><span>{viewViaje.cargamento_id}</span></div>
+            <div className="field"><label className="font-bold">Vehículo (ID / Placa): </label><span>{viewViaje.placa_vehiculo || viewViaje.vehiculo_id}</span></div>
+            <div className="field"><label className="font-bold">Piloto: </label><span>{viewViaje.nombre_piloto || viewViaje.usuario_id}</span></div>
+            <div className="field"><label className="font-bold">Tienda Destino: </label><span>{viewViaje.nombre_tienda || viewViaje.tienda_id}</span></div>
+            <div className="field"><label className="font-bold">Fecha Salida: </label><span>{viewViaje.fecha_plan_salida ? new Date(viewViaje.fecha_plan_salida).toLocaleString('es-GT') : ''}</span></div>
+            <div className="field"><label className="font-bold">Estado: </label><span>{viewViaje.estado || 'planificado'}</span></div>
+            {viewViaje.observaciones && (
+              <div className="field"><label className="font-bold">Observaciones: </label><span>{viewViaje.observaciones}</span></div>
+            )}
+          </div>
+        )}
       </Dialog>
 
       <ConfirmDialog />

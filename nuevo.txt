@@ -1,29 +1,14 @@
-Formulario: Adjuntar Documento
-Campo	Valor Por Defecto	Tipo de Campo	Observación
-Tipo de Documento	--------------	Requerido / Selección	Tipo de documento que se va a subir
-Archivo	--------------	Requerido / Archivo	El archivo a adjuntar
-Adjuntar Documento	--------------	Submit	Habilitado si toda la información pasó las validaciones
+ID,Modulo,Tipo,Caso,Datos,Pasos,Esperado,Obtenido,Estado
+AUTH-001,Auth,Integración,"Login válido","usuario=ana; pass=correcta","POST /login; verificar HTTP 200 y token","HTTP 200 y token JWT","HTTP 200 y token JWT","OK"
+AUTH-002,Auth,Sistema,"Bloqueo tras 5 intentos fallidos","usuario=ana; 5 contraseñas erróneas","repetir login fallido x5; intento 6","HTTP 429 (bloqueo 15 min)","HTTP 200 (no bloqueó)","Falló"
+AUTH-003,Auth,Unitaria,"Registro de usuario","email=juan@test.com; pass=Secret123!; name=Juan","Ejecutar test_register_user_success()","Usuario creado y correo de confirmación enviado","Usuario creado y correo de confirmación enviado","OK"
+AUTH-004,Auth,Unitaria,"Login exitoso (correo confirmado)","email=juan@test.com; pass=Secret123!; is_confirmed=true","Ejecutar test_login_confirmed_email_success()","HTTP 200 y JWT token devuelto","HTTP 200 y JWT token devuelto","OK"
+AUTH-005,Auth,Unitaria,"Fallar login (correo no confirmado)","email=pedro@test.com; pass=Secret123!; is_confirmed=false","Ejecutar test_login_unconfirmed_email_fails()","HTTP 401 / Error 'Correo no verificado'","HTTP 401 / Error 'Correo no verificado'","OK"
+USER-001,Usuarios,Unitaria,"Editar información de usuario","user_id=123; name=Juan Perez; phone=5551234","Ejecutar test_update_user_profile_success()","Datos actualizados exitosamente","Datos actualizados exitosamente","OK"
 
-Formulario: Crear Cargamento
-Campo	Valor Por Defecto	Tipo de Campo	Observación
-Furgón	--------------	Requerido / Selección	Furgón asociado al cargamento
-Campaña	--------------	Requerido / Selección	Campaña a la que pertenece
-Crear Cargamento	--------------	Submit	Habilitado si toda la información pasó las validaciones
-
-Formulario: Crear Viaje
-Campo	Valor Por Defecto	Tipo de Campo	Observación
-Fecha Plan Salida	--------------	Requerido / Entrada (Fecha)	Fecha planificada para el viaje
-Observaciones	--------------	Opcional / Entrada	Detalles adicionales del viaje
-Cargamento	--------------	Requerido / Selección	El cargamento a transportar
-Vehículo	--------------	Requerido / Selección	El vehículo asignado
-Tienda	--------------	Requerido / Selección	La tienda de destino
-Piloto / Usuario	--------------	Requerido / Selección	El conductor asignado
-Crear Viaje	--------------	Submit	Habilitado si toda la información pasó las validaciones
-
-Formulario: Campaña
-Campo	Valor Por Defecto	Tipo de Campo	Observación
-Fecha Inicio	--------------	Requerido / Entrada (Fecha)	Fecha en la que inicia la campaña
-Fecha Fin	--------------	Requerido / Entrada (Fecha)	Fecha en la que finaliza
-Descripción	--------------	Requerido / Entrada	Detalles descriptivos de la campaña
-Estado	Activo (true)	Requerido / Booleano (Switch)	Indica si está activa
-Crear Campaña	--------------	Submit	Habilitado si toda la información pasó las validaciones
+Modulo,Metrica,Valor,Unidad,Version_Fecha
+Auth,"p95 latencia",175,ms,"b4 - 2025-09-01"
+Auth,"% de pruebas OK",95,%,"b4 - 2025-09-01"
+Pagos,"% de pruebas OK",92,%,"b4 - 2025-09-01"
+Auth,"Pruebas unitarias OK",100,%,"b5 - 2026-09-20"
+Usuarios,"Pruebas unitarias OK",100,%,"b5 - 2026-09-20"

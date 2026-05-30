@@ -32,6 +32,8 @@ export default function CargamentosPage() {
   const emptyCargamento = { furgon_id: '', campania_id: '' };
   const [newCargamento, setNewCargamento] = useState({ ...emptyCargamento });
   const [editingCargamento, setEditingCargamento] = useState(null);
+  const [viewDialogVisible, setViewDialogVisible] = useState(false);
+  const [viewCargamento, setViewCargamento] = useState(null);
 
   const [selectedCargamento, setSelectedCargamento] = useState(null);
   const [cargamentoDocs, setCargamentoDocs] = useState([]);
@@ -161,8 +163,16 @@ export default function CargamentosPage() {
     }
     setSaving(true);
     try {
-      await createCargamento(newCargamento);
+      const created = await createCargamento(newCargamento);
       showSuccess('Cargamento creado correctamente');
+      const selectedFurgon = furgones.find(f => f.id === newCargamento.furgon_id);
+      const selectedCampania = campanias.find(c => c.id === newCargamento.campania_id);
+      setViewCargamento({
+        ...created,
+        numero_contenedor: selectedFurgon?.numero_contenedor || created.furgon_id,
+        descripcion_campania: selectedCampania?.descripcion || created.campania_id
+      });
+      setViewDialogVisible(true);
       hideCreateDialog();
       loadData();
     } catch (error) {
@@ -333,6 +343,13 @@ export default function CargamentosPage() {
     );
   };
 
+  const idCargamentoBodyTemplate = (rowData) => {
+    const maxLen = 12;
+    const code = rowData.id?.toString() ?? '';
+    const display = code.length > maxLen ? `${code.substring(0, maxLen)}...` : code;
+    return <span title={code}>{display}</span>;
+  };
+
   return (
     <div className="card">
       <ConfirmDialog />
@@ -343,11 +360,12 @@ export default function CargamentosPage() {
         rows={10}
         dataKey="id"
         filters={filters}
-        globalFilterFields={['numero_contenedor', 'descripcion_campania', 'estado']}
+        globalFilterFields={['id', 'numero_contenedor', 'descripcion_campania', 'estado']}
         header={renderHeader()}
         emptyMessage="No se encontraron cargamentos."
         stripedRows
       >
+        <Column field="id" header="ID Cargamento" body={idCargamentoBodyTemplate} sortable />
         <Column field="numero_contenedor" header="Furgón (Contenedor)" sortable />
         <Column field="descripcion_campania" header="Campaña" sortable />
         <Column field="estado" header="Estado" body={estadoBodyTemplate} sortable />
@@ -499,6 +517,25 @@ export default function CargamentosPage() {
           <Column field="fecha_subida" header="Fecha de Subida" body={(r) => dateTemplate(r.fecha_subida)} sortable />
           <Column header="Acción" body={docActionsTemplate} />
         </DataTable>
+      </Dialog>
+
+      {/* Dialog para mostrar detalles del cargamento recién creado */}
+      <Dialog
+        visible={viewDialogVisible}
+        style={{ width: '600px' }}
+        header="Detalles del Cargamento Creado"
+        modal
+        footer={(<Button label="Aceptar" icon="pi pi-check" onClick={() => setViewDialogVisible(false)} />)}
+        onHide={() => setViewDialogVisible(false)}
+      >
+        {viewCargamento && (
+          <div className="p-fluid" style={{ fontSize: '1.2rem' }}>
+            <div className="field"><label className="font-bold">ID Cargamento: </label><span>{viewCargamento.id}</span></div>
+            <div className="field"><label className="font-bold">Furgón: </label><span>{viewCargamento.numero_contenedor || viewCargamento.furgon_id}</span></div>
+            <div className="field"><label className="font-bold">Campaña: </label><span>{viewCargamento.descripcion_campania || viewCargamento.campania_id}</span></div>
+            <div className="field"><label className="font-bold">Estado: </label><span>{viewCargamento.estado || 'creado'}</span></div>
+          </div>
+        )}
       </Dialog>
     </div>
   );
