@@ -84,7 +84,52 @@ class TrackingService:
             if not resp.data:
                 raise BadRequestError(detail="Error al actualizar la posición")
 
-            return resp.data[0]
+            # Evaluar alertas automáticas de proximidad (<12h) y desvío (>5km)
+            from app.services.route_alert_service import RouteAlertService
+            alertas_generadas = []
+            
+            # Obtener datos de la tienda destino
+            tienda_info = sb.table("viajes").select("tienda_id, tiendas!inner(nombre, pais, email, latitud, longitud)").eq("id", viaje_id).execute()
+            if tienda_info.data and tienda_info.data[0].get("tiendas"):
+                t = tienda_info.data[0]["tiendas"]
+                t_lat = float(t.get("latitud") or 0)
+                t_lng = float(t.get("longitud") or 0)
+                t_pais = t.get("pais", "Guatemala")
+                t_email = t.get("email") or "sucursal@globaltrans.com"
+                
+                # 1. Evaluar desvío de ruta > 5 km
+                ruta = RouteAlertService.get_planned_route(t_pais, t_lat, t_lng)
+                desvio_km = RouteAlertService.evaluate_route_deviation(float(data.latitud), float(data.longitud), ruta["waypoints"])
+                
+                if desvio_km > 5.0:
+                    alertas_generadas.append({
+                        "tipo": "DESVIO_RUTA",
+                        "nivel": "CRITICO",
+                        "mensaje": f"ALERTA ADMINISTRADOR: El transporte se ha desviado {desvio_km} km de la ruta autorizada hacia {t.get('nombre')}.",
+                        "destinatario": "admin@globaltrans.com",
+                        "desvio_km": desvio_km,
+                        "fecha": datetime.now(timezone.utc).isoformat()
+                    })
+
+                # 2. Evaluar proximidad < 12 horas a destino
+                if t_lat and t_lng:
+                    horas_restantes, dist_restante = RouteAlertService.evaluate_proximity_hours(
+                        float(data.latitud), float(data.longitud), t_lat, t_lng, float(data.velocidad or 60.0)
+                    )
+                    if horas_restantes <= 12.0:
+                        alertas_generadas.append({
+                            "tipo": "PROXIMIDAD_DESTINO",
+                            "nivel": "INFO",
+                            "mensaje": f"NOTIFICACIÓN A SUCURSAL: Su cargamento está a {dist_restante} km (~{horas_restantes} horas) de llegar a la tienda {t.get('nombre')}.",
+                            "destinatario": t_email,
+                            "horas_restantes": horas_restantes,
+                            "fecha": datetime.now(timezone.utc).isoformat()
+                        })
+
+            return {
+                "posicion": resp.data[0],
+                "alertas": alertas_generadas
+            }
 
         except BadRequestError:
             raise
@@ -210,3 +255,44 @@ class TrackingService:
             raise
         except Exception as e:
             raise BadRequestError(detail=f"Error al obtener detalle del viaje: {str(e)}")
+
+    @staticmethod
+    async def obtener_ruta_planificada(viaje_id: str):
+        """Obtiene la ruta trazada y waypoints que debe seguir el viaje según la tienda destino."""
+        try:
+            sb = get_supabase_admin()
+            viaje_resp = sb.table("viajes").select("id, estado, tiendas!inner(nombre, pais, latitud, longitud)").eq("id", viaje_id).execute()
+            if not viaje_resp.data:
+                raise BadRequestError(detail="Viaje no encontrado")
+            
+            t = viaje_resp.data[0]["tiendas"]
+            from app.services.route_alert_service import RouteAlertService
+            t_lat = float(t.get("latitud") or 0)
+            t_lng = float(t.get("longitud") or 0)
+            t_pais = t.get("pais", "Guatemala")
+            
+            ruta_info = RouteAlertService.get_planned_route(t_pais, t_lat, t_lng)
+            
+            # Obtener posición actual del vehículo si existe
+            pos_resp = sb.table("viaje_posicion_actual").select("*").eq("viaje_id", viaje_id).execute()
+            pos = pos_resp.data[0] if pos_resp.data else None
+            
+            desvio_km = 0.0
+            if pos and pos.get("latitud") and pos.get("longitud"):
+                desvio_km = RouteAlertService.evaluate_route_deviation(
+                    float(pos["latitud"]), float(pos["longitud"]), ruta_info["waypoints"]
+                )
+
+            return {
+                "viaje_id": viaje_id,
+                "tienda": t.get("nombre"),
+                "pais_destino": t_pais,
+                "waypoints": ruta_info["waypoints"],
+                "paradas_principales": ruta_info["paradas"],
+                "posicion_actual": pos,
+                "desvio_km": desvio_km,
+                "alerta_desvio": desvio_km > 5.0
+            }
+        except Exception as e:
+            raise BadRequestError(detail=f"Error al obtener ruta planificada: {str(e)}")
+

@@ -47,3 +47,12 @@ export const obtenerViajeDetalle = async (viajeId) => {
   const response = await axiosInstance.get(`/api/tracking/detalle/${viajeId}`);
   return response.data;
 };
+
+/**
+ * Obtiene la ruta planificada a seguir y posibles desvíos superiores a 5 km.
+ */
+export const obtenerRutaPlanificada = async (viajeId) => {
+  const response = await axiosInstance.get(`/api/tracking/${viajeId}/ruta-planificada`);
+  return response.data;
+};
+

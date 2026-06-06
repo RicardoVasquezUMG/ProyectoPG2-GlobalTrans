@@ -21,6 +21,7 @@ class ViajeCreate(ViajeBase):
 
 class ViajeUpdate(BaseModel):
     fecha_plan_salida: Optional[datetime] = None
+    fecha_esperada_llegada: Optional[datetime] = None
     observaciones: Optional[str] = None
     cargamento_id: Optional[str] = None
     vehiculo_id: Optional[str] = None

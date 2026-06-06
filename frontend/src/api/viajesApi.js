@@ -40,3 +40,20 @@ export const deleteViaje = async (id) => {
   const response = await axiosInstance.delete(`/api/viajes/${id}`);
   return response.data;
 };
+
+/**
+ * Obtiene los costos y sobrecostos de un viaje.
+ */
+export const getGastosViaje = async (id) => {
+  const response = await axiosInstance.get(`/api/viajes/${id}/gastos`);
+  return response.data;
+};
+
+/**
+ * Registra o actualiza los costos y sobrecostos de un viaje.
+ */
+export const saveGastosViaje = async (id, data) => {
+  const response = await axiosInstance.post(`/api/viajes/${id}/gastos`, data);
+  return response.data;
+};
+

@@ -8,9 +8,11 @@ import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { Dropdown } from 'primereact/dropdown';
 import { InputText } from 'primereact/inputtext';
+import { InputNumber } from 'primereact/inputnumber';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { obtenerViajeDetalle, obtenerHistorial, registrarCheckpoint, actualizarPosicion } from '../../api/trackingApi';
+import { getGastosViaje, saveGastosViaje } from '../../api/viajesApi';
 import { useToast } from '../../hooks/useToast';
 import { useAuth } from '../../hooks/useAuth';
 import L from 'leaflet';
@@ -71,6 +73,18 @@ export default function ViajeDetallePage() {
   const [checkpoints, setCheckpoints] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dialogVisible, setDialogVisible] = useState(false);
+  const [gastosDialogVisible, setGastosDialogVisible] = useState(false);
+  const [gastos, setGastos] = useState({
+    flete_base: 0,
+    multas_aduana: 0,
+    viaticos_extra: 0,
+    parqueo_almacenaje: 0,
+    otros_imprevistos: 0,
+    notas: '',
+    total_sobrecostos: 0,
+    total_gasto: 0
+  });
+  const [savingGastos, setSavingGastos] = useState(false);
   const [gpsActive, setGpsActive] = useState(false);
   const gpsIntervalRef = useRef(null);
 
@@ -85,6 +99,7 @@ export default function ViajeDetallePage() {
 
   useEffect(() => {
     loadData();
+    loadGastos();
     return () => {
       // Limpiar GPS al salir
       if (gpsIntervalRef.current) {
@@ -106,6 +121,43 @@ export default function ViajeDetallePage() {
       showError('Error al cargar datos del viaje');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadGastos = async () => {
+    try {
+      const data = await getGastosViaje(id);
+      if (data) {
+        setGastos({
+          flete_base: data.flete_base || 0,
+          multas_aduana: data.multas_aduana || 0,
+          viaticos_extra: data.viaticos_extra || 0,
+          parqueo_almacenaje: data.parqueo_almacenaje || 0,
+          otros_imprevistos: data.otros_imprevistos || 0,
+          notas: data.notas || '',
+          total_sobrecostos: data.total_sobrecostos || 0,
+          total_gasto: data.total_gasto || 0
+        });
+      }
+    } catch (e) {
+      // Sin gastos registrados aún
+    }
+  };
+
+  const handleSaveGastos = async () => {
+    try {
+      setSavingGastos(true);
+      const saved = await saveGastosViaje(id, {
+        viaje_id: id,
+        ...gastos
+      });
+      setGastos(saved);
+      showSuccess('Costos y sobrecostos del viaje guardados exitosamente');
+      setGastosDialogVisible(false);
+    } catch (error) {
+      showError('Error al guardar costos del viaje');
+    } finally {
+      setSavingGastos(false);
     }
   };
 
@@ -277,7 +329,10 @@ export default function ViajeDetallePage() {
         <div className="flex gap-2 align-items-center">
           <Tag severity={estadoSeverity[viaje.estado]} value={estadoLabels[viaje.estado] || viaje.estado} className="text-base px-3 py-2" />
           {!isPiloto && (
-            <Button label="Registrar Checkpoint" icon="pi pi-plus" onClick={openCheckpointDialog} />
+            <>
+              <Button label="Costos del Viaje" icon="pi pi-dollar" severity="warning" outlined onClick={() => setGastosDialogVisible(true)} />
+              <Button label="Registrar Checkpoint" icon="pi pi-plus" onClick={openCheckpointDialog} />
+            </>
           )}
           {isPiloto && isViajeActivo && (
             <Button
@@ -310,12 +365,15 @@ export default function ViajeDetallePage() {
             <div className="font-semibold">{viaje.numero_contenedor || 'N/A'}</div>
           </Card>
         </div>
-        <div className="col-6 md:col-3">
+        <div className="col-12 md:col-3">
           <Card>
-            <div className="text-500 text-sm mb-1">Fecha Planificada</div>
-            <div className="font-semibold">
-              {viaje.fecha_plan_salida ? new Date(viaje.fecha_plan_salida).toLocaleDateString('es-GT') : 'N/A'}
+            <div className="text-500 text-sm mb-1">Costos Totales / Sobrecostos</div>
+            <div className="font-bold text-lg text-primary">
+              ${(gastos.total_gasto || (gastos.flete_base + (gastos.multas_aduana||0) + (gastos.viaticos_extra||0) + (gastos.parqueo_almacenaje||0))).toFixed(2)}
             </div>
+            <span className="text-xs text-orange-500">
+              Imprevistos: ${(gastos.total_sobrecostos || ((gastos.multas_aduana||0) + (gastos.viaticos_extra||0) + (gastos.parqueo_almacenaje||0))).toFixed(2)}
+            </span>
           </Card>
         </div>
       </div>
@@ -443,6 +501,115 @@ export default function ViajeDetallePage() {
         <div className="flex justify-content-end gap-2 mt-4">
           <Button label="Cancelar" icon="pi pi-times" outlined onClick={() => setDialogVisible(false)} />
           <Button label="Registrar" icon="pi pi-check" onClick={saveCheckpoint} />
+        </div>
+      </Dialog>
+
+      {/* Dialog Registro y Totalización de Gastos de Viaje */}
+      <Dialog
+        visible={gastosDialogVisible}
+        style={{ width: '600px' }}
+        header="Registro de Costos Logísticos y Sobrecostos"
+        modal
+        className="p-fluid"
+        onHide={() => setGastosDialogVisible(false)}
+        footer={(
+          <div className="flex justify-content-end gap-2">
+            <Button label="Cancelar" icon="pi pi-times" outlined onClick={() => setGastosDialogVisible(false)} />
+            <Button label="Guardar y Totalizar" icon="pi pi-check" onClick={handleSaveGastos} loading={savingGastos} />
+          </div>
+        )}
+      >
+        <div className="flex flex-column gap-3 pt-2">
+          <div className="field">
+            <label htmlFor="flete_base" className="font-bold">Flete Base (Tarifa Pactada USD)</label>
+            <InputNumber
+              id="flete_base"
+              value={gastos.flete_base}
+              onValueChange={(e) => setGastos({ ...gastos, flete_base: e.value || 0 })}
+              mode="currency"
+              currency="USD"
+              locale="en-US"
+            />
+          </div>
+
+          <h4 className="m-0 text-orange-500 font-bold border-bottom-1 border-300 pb-2">Sobrecostos e Imprevistos Operativos</h4>
+
+          <div className="grid formgrid">
+            <div className="col-12 md:col-6 field">
+              <label htmlFor="multas_aduana" className="font-semibold text-sm">Multas / Errores de Papeleo (DUCA/Aduanas)</label>
+              <InputNumber
+                id="multas_aduana"
+                value={gastos.multas_aduana}
+                onValueChange={(e) => setGastos({ ...gastos, multas_aduana: e.value || 0 })}
+                mode="currency"
+                currency="USD"
+                locale="en-US"
+              />
+            </div>
+
+            <div className="col-12 md:col-6 field">
+              <label htmlFor="viaticos_extra" className="font-semibold text-sm">Viáticos Extra (Piloto / Demoras)</label>
+              <InputNumber
+                id="viaticos_extra"
+                value={gastos.viaticos_extra}
+                onValueChange={(e) => setGastos({ ...gastos, viaticos_extra: e.value || 0 })}
+                mode="currency"
+                currency="USD"
+                locale="en-US"
+              />
+            </div>
+
+            <div className="col-12 md:col-6 field">
+              <label htmlFor="parqueo_almacenaje" className="font-semibold text-sm">Parqueo / Almacenaje en Frontera</label>
+              <InputNumber
+                id="parqueo_almacenaje"
+                value={gastos.parqueo_almacenaje}
+                onValueChange={(e) => setGastos({ ...gastos, parqueo_almacenaje: e.value || 0 })}
+                mode="currency"
+                currency="USD"
+                locale="en-US"
+              />
+            </div>
+
+            <div className="col-12 md:col-6 field">
+              <label htmlFor="otros_imprevistos" className="font-semibold text-sm">Otros Sobrecostos</label>
+              <InputNumber
+                id="otros_imprevistos"
+                value={gastos.otros_imprevistos}
+                onValueChange={(e) => setGastos({ ...gastos, otros_imprevistos: e.value || 0 })}
+                mode="currency"
+                currency="USD"
+                locale="en-US"
+              />
+            </div>
+          </div>
+
+          <div className="field">
+            <label htmlFor="gastos_notas" className="font-semibold text-sm">Notas y Justificación de Sobrecostos</label>
+            <InputTextarea
+              id="gastos_notas"
+              value={gastos.notas}
+              onChange={(e) => setGastos({ ...gastos, notas: e.target.value })}
+              rows={2}
+              placeholder="Ej: Retención por revisión exhaustiva de DUCA en frontera..."
+            />
+          </div>
+
+          {/* Resumen Totalizador */}
+          <div className="surface-ground p-3 border-round flex justify-content-between align-items-center mt-2">
+            <div>
+              <span className="text-500 text-sm block">Total Sobrecostos Imprevistos:</span>
+              <span className="text-xl font-bold text-red-500">
+                ${((gastos.multas_aduana || 0) + (gastos.viaticos_extra || 0) + (gastos.parqueo_almacenaje || 0) + (gastos.otros_imprevistos || 0)).toFixed(2)}
+              </span>
+            </div>
+            <div className="text-right">
+              <span className="text-500 text-sm block">Costo Total del Viaje:</span>
+              <span className="text-2xl font-bold text-primary">
+                ${((gastos.flete_base || 0) + (gastos.multas_aduana || 0) + (gastos.viaticos_extra || 0) + (gastos.parqueo_almacenaje || 0) + (gastos.otros_imprevistos || 0)).toFixed(2)}
+              </span>
+            </div>
+          </div>
         </div>
       </Dialog>
     </div>

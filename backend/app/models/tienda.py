@@ -6,6 +6,7 @@ class TiendaBase(BaseModel):
     nombre: str
     pais: str
     direccion: str
+    email: Optional[str] = None
     latitud: Optional[str] = None
     longitud: Optional[str] = None
     estado: bool = True
@@ -17,6 +18,7 @@ class TiendaUpdate(BaseModel):
     nombre: Optional[str] = None
     pais: Optional[str] = None
     direccion: Optional[str] = None
+    email: Optional[str] = None
     latitud: Optional[str] = None
     longitud: Optional[str] = None
     estado: Optional[bool] = None

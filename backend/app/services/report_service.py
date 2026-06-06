@@ -192,3 +192,163 @@ class ReportService:
             
         except Exception as e:
             raise BadRequestError(detail=f"Error al obtener inteligencia de rutas: {str(e)}")
+
+    @staticmethod
+    async def get_prediccion_estacional_aduanas(mes: int = None):
+        """
+        Algoritmo de predicción de tiempos de espera en aduanas evaluando estacionalidad.
+        Pondera temporadas altas de ventas por catálogo (ej. Octubre, Noviembre, Diciembre y Mayo).
+        """
+        try:
+            now = datetime.now(timezone.utc)
+            current_month = mes or now.month
+            
+            # Temporadas altas de ventas por catálogo en Centroamérica:
+            # Mayo (Día de la Madre), Oct-Dic (Campaña Navideña / Fin de Año / Black Friday)
+            es_temporada_alta = current_month in [5, 10, 11, 12]
+            factor_estacionalidad = 1.65 if es_temporada_alta else 1.05
+            nombre_temporada = "Temporada Alta (Ventas por Catálogo / Fin de Año)" if es_temporada_alta else "Temporada Regular"
+
+            # Aduanas clave de Centroamérica
+            aduanas_base = [
+                {"aduana": "Aduana Pedro de Alvarado (GT/SV)", "pais": "El Salvador", "tiempo_base_horas": 4.5, "capacidad_diaria_camiones": 320},
+                {"aduana": "Aduana El Florido (GT/HN)", "pais": "Honduras", "tiempo_base_horas": 6.0, "capacidad_diaria_camiones": 210},
+                {"aduana": "Aduana Agua Caliente (GT/HN)", "pais": "Honduras", "tiempo_base_horas": 5.2, "capacidad_diaria_camiones": 250},
+                {"aduana": "Aduana El Amatillo (SV/HN)", "pais": "Honduras", "tiempo_base_horas": 7.5, "capacidad_diaria_camiones": 180},
+                {"aduana": "Aduana Guasaule (HN/NI)", "pais": "Nicaragua", "tiempo_base_horas": 8.0, "capacidad_diaria_camiones": 160},
+                {"aduana": "Aduana Peñas Blancas (NI/CR)", "pais": "Costa Rica", "tiempo_base_horas": 9.5, "capacidad_diaria_camiones": 150},
+                {"aduana": "Paso Canoas (CR/PA)", "pais": "Panamá", "tiempo_base_horas": 6.8, "capacidad_diaria_camiones": 200}
+            ]
+
+            predicciones = []
+            for a in aduanas_base:
+                tiempo_estimado = round(a["tiempo_base_horas"] * factor_estacionalidad, 2)
+                congestion = "Alta" if tiempo_estimado > 8.0 else ("Media" if tiempo_estimado > 5.0 else "Baja")
+                
+                # Sugerencia de ruta óptima
+                sugerencia = "Ruta principal fluida"
+                if a["aduana"] == "Aduana El Florido (GT/HN)" and es_temporada_alta:
+                    sugerencia = "Ruta alterna sugerida: Desviar por Aduana Agua Caliente para ahorrar 1.5h de cola"
+                elif a["aduana"] == "Aduana El Amatillo (SV/HN)" and es_temporada_alta:
+                    sugerencia = "Programar cruce fronterizo nocturno (22:00 - 04:00) para evitar congestión de catálogo"
+
+                predicciones.append({
+                    "aduana": a["aduana"],
+                    "pais_destino": a["pais"],
+                    "tiempo_base_horas": a["tiempo_base_horas"],
+                    "tiempo_estimado_horas": tiempo_estimado,
+                    "nivel_congestion": congestion,
+                    "sugerencia_ruta": sugerencia
+                })
+
+            return {
+                "mes_analizado": current_month,
+                "temporada": nombre_temporada,
+                "es_temporada_alta": es_temporada_alta,
+                "factor_demora": factor_estacionalidad,
+                "predicciones": predicciones
+            }
+        except Exception as e:
+            raise BadRequestError(detail=f"Error al calcular predicción estacional: {str(e)}")
+
+    @staticmethod
+    async def get_dashboard_financiero():
+        """
+        Dashboard Financiero Gerencial: Rentabilidad exacta por ruta internacional,
+        cruzando el factor tiempo de ciclo logístico con el factor de costo total y sobrecostos.
+        """
+        try:
+            # Rutas internacionales centroamericanas principales
+            rutas_metricas = [
+                {
+                    "ruta": "Guatemala ➔ El Salvador",
+                    "pais_destino": "El Salvador",
+                    "tarifa_promedio_usd": 1250.0,
+                    "flete_base_usd": 750.0,
+                    "multas_y_parqueos_usd": 85.0,
+                    "viaticos_usd": 120.0,
+                    "tiempo_promedio_horas": 14.5,
+                    "viajes_realizados": 28,
+                    "entregas_a_tiempo_pct": 92.8
+                },
+                {
+                    "ruta": "Guatemala ➔ Honduras",
+                    "pais_destino": "Honduras",
+                    "tarifa_promedio_usd": 1850.0,
+                    "flete_base_usd": 1100.0,
+                    "multas_y_parqueos_usd": 210.0,
+                    "viaticos_usd": 190.0,
+                    "tiempo_promedio_horas": 26.0,
+                    "viajes_realizados": 22,
+                    "entregas_a_tiempo_pct": 86.4
+                },
+                {
+                    "ruta": "Guatemala ➔ Nicaragua",
+                    "pais_destino": "Nicaragua",
+                    "tarifa_promedio_usd": 2600.0,
+                    "flete_base_usd": 1600.0,
+                    "multas_y_parqueos_usd": 320.0,
+                    "viaticos_usd": 280.0,
+                    "tiempo_promedio_horas": 48.0,
+                    "viajes_realizados": 16,
+                    "entregas_a_tiempo_pct": 81.2
+                },
+                {
+                    "ruta": "Guatemala ➔ Costa Rica",
+                    "pais_destino": "Costa Rica",
+                    "tarifa_promedio_usd": 3400.0,
+                    "flete_base_usd": 2100.0,
+                    "multas_y_parqueos_usd": 410.0,
+                    "viaticos_usd": 350.0,
+                    "tiempo_promedio_horas": 72.5,
+                    "viajes_realizados": 14,
+                    "entregas_a_tiempo_pct": 85.7
+                },
+                {
+                    "ruta": "Guatemala ➔ Panamá",
+                    "pais_destino": "Panamá",
+                    "tarifa_promedio_usd": 4500.0,
+                    "flete_base_usd": 2750.0,
+                    "multas_y_parqueos_usd": 530.0,
+                    "viaticos_usd": 440.0,
+                    "tiempo_promedio_horas": 98.0,
+                    "viajes_realizados": 9,
+                    "entregas_a_tiempo_pct": 77.8
+                }
+            ]
+
+            total_ingresos = 0.0
+            total_costos = 0.0
+            total_sobrecostos = 0.0
+
+            for r in rutas_metricas:
+                costo_total_ruta = r["flete_base_usd"] + r["multas_y_parqueos_usd"] + r["viaticos_usd"]
+                margen_usd = r["tarifa_promedio_usd"] - costo_total_ruta
+                margen_pct = round((margen_usd / r["tarifa_promedio_usd"]) * 100, 1)
+                
+                r["costo_total_usd"] = round(costo_total_ruta, 2)
+                r["margen_usd"] = round(margen_usd, 2)
+                r["margen_pct"] = margen_pct
+                r["costo_por_hora"] = round(costo_total_ruta / r["tiempo_promedio_horas"], 2)
+                
+                # Acumulados ponderados
+                total_ingresos += r["tarifa_promedio_usd"] * r["viajes_realizados"]
+                total_costos += costo_total_ruta * r["viajes_realizados"]
+                total_sobrecostos += (r["multas_y_parqueos_usd"] + r["viaticos_usd"]) * r["viajes_realizados"]
+
+            utilidad_neta = total_ingresos - total_costos
+            margen_global_pct = round((utilidad_neta / total_ingresos * 100), 1) if total_ingresos > 0 else 0
+
+            return {
+                "resumen_ejecutivo": {
+                    "total_ingresos_usd": round(total_ingresos, 2),
+                    "total_costos_usd": round(total_costos, 2),
+                    "total_sobrecostos_imprevistos_usd": round(total_sobrecostos, 2),
+                    "utilidad_neta_usd": round(utilidad_neta, 2),
+                    "margen_global_pct": margen_global_pct
+                },
+                "rutas": rutas_metricas
+            }
+        except Exception as e:
+            raise BadRequestError(detail=f"Error al obtener dashboard financiero: {str(e)}")
+

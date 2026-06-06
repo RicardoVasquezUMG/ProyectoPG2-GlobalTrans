@@ -35,6 +35,7 @@ export default function ViajesPage() {
   const [dialogVisible, setDialogVisible] = useState(false);
   const [formData, setFormData] = useState({
     fecha_plan_salida: null,
+    fecha_esperada_llegada: null,
     observaciones: '',
     cargamento_id: '',
     vehiculo_id: '',
@@ -84,6 +85,7 @@ export default function ViajesPage() {
   const openNew = () => {
     setFormData({
       fecha_plan_salida: null,
+      fecha_esperada_llegada: null,
       observaciones: '',
       cargamento_id: '',
       vehiculo_id: '',
@@ -96,7 +98,8 @@ export default function ViajesPage() {
 
   const editViaje = (viaje) => {
     setFormData({
-      fecha_plan_salida: new Date(viaje.fecha_plan_salida),
+      fecha_plan_salida: viaje.fecha_plan_salida ? new Date(viaje.fecha_plan_salida) : null,
+      fecha_esperada_llegada: viaje.fecha_esperada_llegada ? new Date(viaje.fecha_esperada_llegada) : null,
       observaciones: viaje.observaciones || '',
       cargamento_id: viaje.cargamento_id,
       vehiculo_id: viaje.vehiculo_id,
@@ -243,6 +246,7 @@ export default function ViajesPage() {
           <Column field="nombre_tienda" header="Destino (Tienda)" sortable />
           <Column field="estado" header="Estado" body={estadoTemplate} sortable />
           <Column field="fecha_plan_salida" header="Fecha Salida" body={dateTemplate} sortable />
+          <Column field="fecha_esperada_llegada" header="ETA (Estimado Llegada)" body={(r) => dateTemplate({ fecha_plan_salida: r.fecha_esperada_llegada })} sortable />
           <Column body={actionTemplate} exportable={false} style={{ minWidth: '10rem' }} />
         </DataTable>
       </div>
@@ -274,6 +278,21 @@ export default function ViajesPage() {
                 setFormData({ ...formData, fecha_plan_salida: val ? new Date(val) : null });
               }}
             />
+          </div>
+
+          <div className="col-12 md:col-6 field flex flex-column">
+            <label htmlFor="fecha_esperada_llegada" className="font-bold mb-2">Tiempo Estimado de Llegada (ETA)</label>
+            <input
+              type="datetime-local"
+              id="fecha_esperada_llegada"
+              className="p-inputtext p-component"
+              value={formData.fecha_esperada_llegada ? new Date(formData.fecha_esperada_llegada.getTime() - formData.fecha_esperada_llegada.getTimezoneOffset() * 60000).toISOString().slice(0, 16) : ''}
+              onChange={(e) => {
+                const val = e.target.value;
+                setFormData({ ...formData, fecha_esperada_llegada: val ? new Date(val) : null });
+              }}
+            />
+            <small className="text-500 mt-1">Opcional. Si se deja vacío, el sistema estimará con el promedio histórico.</small>
           </div>
 
           <div className="col-12 md:col-6 field">
@@ -320,6 +339,7 @@ export default function ViajesPage() {
             <div className="field"><label className="font-bold">Piloto: </label><span>{viewViaje.nombre_piloto || viewViaje.usuario_id}</span></div>
             <div className="field"><label className="font-bold">Tienda Destino: </label><span>{viewViaje.nombre_tienda || viewViaje.tienda_id}</span></div>
             <div className="field"><label className="font-bold">Fecha Salida: </label><span>{viewViaje.fecha_plan_salida ? new Date(viewViaje.fecha_plan_salida).toLocaleString('es-GT') : ''}</span></div>
+            <div className="field"><label className="font-bold">Tiempo Estimado Llegada (ETA): </label><span>{viewViaje.fecha_esperada_llegada ? new Date(viewViaje.fecha_esperada_llegada).toLocaleString('es-GT') : 'Calculado automáticamente'}</span></div>
             <div className="field"><label className="font-bold">Estado: </label><span>{viewViaje.estado || 'planificado'}</span></div>
             {viewViaje.observaciones && (
               <div className="field"><label className="font-bold">Observaciones: </label><span>{viewViaje.observaciones}</span></div>

@@ -64,3 +64,13 @@ async def obtener_viaje_detalle(
 ):
     """Obtiene los datos completos de un viaje para la vista de detalle."""
     return await TrackingService.obtener_viaje_detalle(viaje_id)
+
+
+@router.get("/{viaje_id}/ruta-planificada", response_model=dict)
+async def obtener_ruta_planificada(
+    viaje_id: str,
+    user=Depends(require_roles(UserRole.LEVEL_1, UserRole.LEVEL_2, UserRole.LEVEL_3))
+):
+    """Obtiene la ruta planificada a seguir y evalúa si hay desvío de más de 5 km."""
+    return await TrackingService.obtener_ruta_planificada(viaje_id)
+

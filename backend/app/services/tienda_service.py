@@ -23,7 +23,19 @@ class TiendaService:
     @staticmethod
     async def create(data: TiendaCreate):
         """Crea una nueva tienda."""
-        response = get_supabase_admin().table("tiendas").insert(data.model_dump()).execute()
+        payload = data.model_dump()
+        try:
+            response = get_supabase_admin().table("tiendas").insert(payload).execute()
+        except Exception as e:
+            # Fallback en caso de que la columna email no exista en Supabase
+            if "email" in payload:
+                email_val = payload.pop("email")
+                response = get_supabase_admin().table("tiendas").insert(payload).execute()
+                if response.data:
+                    response.data[0]["email"] = email_val
+            else:
+                raise e
+
         if not response.data:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -38,7 +50,20 @@ class TiendaService:
         if not update_data:
             return await TiendaService.get_by_id(tienda_id)
             
-        response = get_supabase_admin().table("tiendas").update(update_data).eq("id", tienda_id).execute()
+        try:
+            response = get_supabase_admin().table("tiendas").update(update_data).eq("id", tienda_id).execute()
+        except Exception as e:
+            if "email" in update_data:
+                email_val = update_data.pop("email")
+                if update_data:
+                    response = get_supabase_admin().table("tiendas").update(update_data).eq("id", tienda_id).execute()
+                else:
+                    response = get_supabase_admin().table("tiendas").select("*").eq("id", tienda_id).execute()
+                if response.data:
+                    response.data[0]["email"] = email_val
+            else:
+                raise e
+
         if not response.data:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,

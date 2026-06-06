@@ -25,3 +25,18 @@ async def update_viaje(viaje_id: str, data: ViajeUpdate, user = Depends(require_
 async def delete_viaje(viaje_id: str, user = Depends(require_roles(UserRole.LEVEL_1))):
     """Elimina un viaje. Solo ADMIN."""
     await ViajeService.delete(viaje_id)
+
+@router.get("/{viaje_id}/gastos")
+async def get_gastos_viaje(viaje_id: str, user = Depends(require_roles(UserRole.LEVEL_1, UserRole.LEVEL_2))):
+    """Obtiene el desglose de gastos y sobrecostos operativos del viaje."""
+    from app.services.gasto_service import GastoService
+    return await GastoService.get_by_viaje(viaje_id)
+
+@router.post("/{viaje_id}/gastos")
+async def save_gastos_viaje(viaje_id: str, data: dict, user = Depends(require_roles(UserRole.LEVEL_1, UserRole.LEVEL_2))):
+    """Registra y totaliza costos operativos (flete base, multas, viáticos, almacenaje)."""
+    from app.services.gasto_service import GastoService
+    from app.models.gasto import GastoViajeCreate
+    gasto_obj = GastoViajeCreate(**data)
+    return await GastoService.save_or_update(viaje_id, gasto_obj)
+

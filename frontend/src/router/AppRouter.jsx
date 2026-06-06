@@ -16,7 +16,7 @@ import RoleRoute from '../guards/RoleRoute';
 import { ROLES } from '../utils/constants';
 
 // Level 1 & 2 Analytics
-import MonitoringPage from '../pages/operator/MonitoringPage';
+import MonitoreoPage from '../pages/admin/MonitoreoPage';
 import ReportsAndAuditPage from '../pages/admin/ReportsAndAuditPage';
 
 // Level 1
@@ -56,7 +56,7 @@ export default function AppRouter() {
         <Route path="/perfil" element={<ProfilePage />} />
         
         {/* Rutas de Monitoreo y Auditoría (Admin y Operador) */}
-        <Route path="/monitoreo" element={<RoleRoute allowedRoles={[ROLES.LEVEL_1, ROLES.LEVEL_2]}><MonitoringPage /></RoleRoute>} />
+        <Route path="/monitoreo" element={<RoleRoute allowedRoles={[ROLES.LEVEL_1, ROLES.LEVEL_2]}><MonitoreoPage /></RoleRoute>} />
         <Route path="/auditoria" element={<RoleRoute allowedRoles={[ROLES.LEVEL_1, ROLES.LEVEL_2]}><ReportsAndAuditPage /></RoleRoute>} />
 
         {/* Rutas protegidas por rol: Nivel 1 (Admin) */}

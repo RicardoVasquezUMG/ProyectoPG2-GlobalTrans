@@ -77,6 +77,7 @@ export default function TiendasPage() {
     nombre: '',
     pais: '',
     direccion: '',
+    email: '',
     latitud: '',
     longitud: '',
     estado: true
@@ -224,7 +225,7 @@ export default function TiendasPage() {
         rows={10}
         dataKey="id"
         filters={filters}
-        globalFilterFields={['id', 'nombre', 'pais', 'direccion']}
+        globalFilterFields={['id', 'nombre', 'pais', 'direccion', 'email']}
         header={renderHeader()}
         emptyMessage="No se encontraron tiendas."
         stripedRows
@@ -233,6 +234,7 @@ export default function TiendasPage() {
         <Column field="nombre" header="Nombre" sortable />
         <Column field="pais" header="País" sortable />
         <Column field="direccion" header="Dirección" sortable />
+        <Column field="email" header="Correo Electrónico" sortable body={(r) => r.email || <span className="text-500 text-sm">Sin correo</span>} />
         <Column field="latitud" header="Latitud" sortable />
         <Column field="longitud" header="Longitud" sortable />
         <Column field="estado" header="Estado" sortable body={estadoBodyTemplate} />
@@ -286,6 +288,16 @@ export default function TiendasPage() {
                   onChange={(e) => setEditingTienda({ ...editingTienda, direccion: e.target.value })} 
                   placeholder="Ej. 5ta Avenida..." 
                   required 
+                />
+              </div>
+              <div className="field m-0">
+                <label htmlFor="email" className="font-bold">Correo Electrónico (Notificaciones de Alertas)</label>
+                <InputText 
+                  id="email" 
+                  type="email"
+                  value={editingTienda.email ?? ''} 
+                  onChange={(e) => setEditingTienda({ ...editingTienda, email: e.target.value })} 
+                  placeholder="Ej. sucursal.central@empresa.com" 
                 />
               </div>
               <div className="formgrid grid">
@@ -371,6 +383,7 @@ export default function TiendasPage() {
             <div className="field"><label className="font-bold">Nombre: </label><span>{viewTienda.nombre}</span></div>
             <div className="field"><label className="font-bold">País: </label><span>{viewTienda.pais}</span></div>
             <div className="field"><label className="font-bold">Dirección: </label><span>{viewTienda.direccion}</span></div>
+            <div className="field"><label className="font-bold">Correo Electrónico: </label><span>{viewTienda.email || 'Sin correo registrado'}</span></div>
             <div className="field"><label className="font-bold">Latitud: </label><span>{viewTienda.latitud || '-'}</span></div>
             <div className="field"><label className="font-bold">Longitud: </label><span>{viewTienda.longitud || '-'}</span></div>
             <div className="field"><label className="font-bold">Estado: </label><span>{viewTienda.estado ? 'Activo' : 'Inactivo'}</span></div>
