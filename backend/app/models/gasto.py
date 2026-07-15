@@ -3,7 +3,7 @@ from typing import Optional
 from datetime import datetime
 
 class GastoViajeBase(BaseModel):
-    viaje_id: str
+    viaje_id: Optional[str] = None
     flete_base: float = 0.0
     multas_aduana: float = 0.0
     viaticos_extra: float = 0.0

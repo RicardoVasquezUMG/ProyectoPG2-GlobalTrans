@@ -13,6 +13,8 @@ import { InputTextarea } from 'primereact/inputtextarea';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { obtenerViajeDetalle, obtenerHistorial, registrarCheckpoint, actualizarPosicion } from '../../api/trackingApi';
 import { getGastosViaje, saveGastosViaje } from '../../api/viajesApi';
+import { getFichaAuditoriaViaje } from '../../api/reportsApi';
+import { exportFichaViajePDF } from '../../utils/pdfGenerator';
 import { useToast } from '../../hooks/useToast';
 import { useAuth } from '../../hooks/useAuth';
 import L from 'leaflet';
@@ -85,8 +87,22 @@ export default function ViajeDetallePage() {
     total_gasto: 0
   });
   const [savingGastos, setSavingGastos] = useState(false);
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
   const [gpsActive, setGpsActive] = useState(false);
   const gpsIntervalRef = useRef(null);
+
+  const handleDownloadPDF = async () => {
+    try {
+      setDownloadingPdf(true);
+      const ficha = await getFichaAuditoriaViaje(id);
+      await exportFichaViajePDF(ficha);
+      showSuccess('Guía de auditoría descargada correctamente en PDF');
+    } catch (e) {
+      showError('Error al generar el PDF de auditoría del viaje');
+    } finally {
+      setDownloadingPdf(false);
+    }
+  };
 
   const [checkpointForm, setCheckpointForm] = useState({
     estado: '',
@@ -331,6 +347,7 @@ export default function ViajeDetallePage() {
           {!isPiloto && (
             <>
               <Button label="Costos del Viaje" icon="pi pi-dollar" severity="warning" outlined onClick={() => setGastosDialogVisible(true)} />
+              <Button label="Auditoría (PDF)" icon="pi pi-file-pdf" severity="help" outlined loading={downloadingPdf} onClick={handleDownloadPDF} tooltip="Descargar Ficha de Auditoría Oficial" />
               <Button label="Registrar Checkpoint" icon="pi pi-plus" onClick={openCheckpointDialog} />
             </>
           )}

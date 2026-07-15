@@ -40,8 +40,19 @@ class ViajeRead(ViajeBase):
     numero_contenedor: Optional[str] = None
     placa_vehiculo: Optional[str] = None
     nombre_tienda: Optional[str] = None
+    pais_destino: Optional[str] = None
     tienda_latitud: Optional[str] = None
     tienda_longitud: Optional[str] = None
     nombre_piloto: Optional[str] = None
+
+    # Campos de gastos y costos operativos
+    flete_base: Optional[float] = None
+    multas_aduana: Optional[float] = None
+    viaticos_extra: Optional[float] = None
+    parqueo_almacenaje: Optional[float] = None
+    otros_imprevistos: Optional[float] = None
+    total_sobrecostos: Optional[float] = None
+    total_gasto: Optional[float] = None
+    tiene_gastos: Optional[bool] = False
 
     model_config = ConfigDict(from_attributes=True)

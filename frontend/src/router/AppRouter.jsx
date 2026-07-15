@@ -55,9 +55,10 @@ export default function AppRouter() {
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/perfil" element={<ProfilePage />} />
         
-        {/* Rutas de Monitoreo y Auditoría (Admin y Operador) */}
+        {/* Rutas de Monitoreo, Auditoría y Finanzas (Admin y Operador) */}
         <Route path="/monitoreo" element={<RoleRoute allowedRoles={[ROLES.LEVEL_1, ROLES.LEVEL_2]}><MonitoreoPage /></RoleRoute>} />
         <Route path="/auditoria" element={<RoleRoute allowedRoles={[ROLES.LEVEL_1, ROLES.LEVEL_2]}><ReportsAndAuditPage /></RoleRoute>} />
+        <Route path="/dashboard-financiero" element={<RoleRoute allowedRoles={[ROLES.LEVEL_1, ROLES.LEVEL_2]}><ReportsAndAuditPage /></RoleRoute>} />
 
         {/* Rutas protegidas por rol: Nivel 1 (Admin) */}
         <Route path="/usuarios" element={<RoleRoute allowedRoles={[ROLES.LEVEL_1]}><UsersPage /></RoleRoute>} />

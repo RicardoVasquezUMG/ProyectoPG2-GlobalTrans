@@ -30,3 +30,8 @@ async def get_dashboard_financiero(user=Depends(require_roles(UserRole.LEVEL_1, 
     """Dashboard financiero gerencial de rentabilidad por ruta internacional cruzando tiempo y costos."""
     return await ReportService.get_dashboard_financiero()
 
+@router.get("/viaje/{viaje_id}/ficha-auditoria")
+async def get_ficha_auditoria_viaje(viaje_id: str, user=Depends(require_roles(UserRole.LEVEL_1, UserRole.LEVEL_2, UserRole.LEVEL_3))):
+    """Obtiene la ficha y bitácora de auditoría digital inmutable de un viaje."""
+    return await ReportService.get_ficha_auditoria_viaje(viaje_id)
+

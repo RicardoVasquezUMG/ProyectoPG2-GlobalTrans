@@ -7,17 +7,34 @@ class ViajeService:
     @staticmethod
     async def get_all(user_id: str = None):
         try:
+            sb = get_supabase_admin()
             # We join with cargamentos, vehicles, tiendas, and users to get descriptive fields
-            query = get_supabase_admin().table("viajes").select(
-                "*, cargamentos!inner(furgon_id, furgones(numero_contenedor)), vehicles!inner(placas), tiendas!inner(nombre, latitud, longitud), users!inner(full_name)"
+            query = sb.table("viajes").select(
+                "*, cargamentos!inner(furgon_id, furgones(numero_contenedor)), vehicles!inner(placas), tiendas!inner(nombre, pais, latitud, longitud), users!inner(full_name)"
             )
             
             if user_id:
                 query = query.eq("usuario_id", user_id)
                 
             response = query.order("created_at", desc=True).execute()
-            
             data = response.data
+
+            # Obtener gastos para todos los viajes devueltos
+            viaje_ids = [r["id"] for r in data]
+            gastos_map = {}
+            if viaje_ids:
+                try:
+                    gastos_resp = sb.table("viaje_gastos").select("*").in_("viaje_id", viaje_ids).execute()
+                    for g in gastos_resp.data:
+                        v_id = g["viaje_id"]
+                        sobrecostos = float(g.get("multas_aduana") or 0) + float(g.get("viaticos_extra") or 0) + float(g.get("parqueo_almacenaje") or 0) + float(g.get("otros_imprevistos") or 0)
+                        flete = float(g.get("flete_base") or 0)
+                        g["total_sobrecostos"] = round(sobrecostos, 2)
+                        g["total_gasto"] = round(flete + sobrecostos, 2)
+                        gastos_map[v_id] = g
+                except Exception:
+                    pass
+
             for row in data:
                 # Extract related data and flatten it
                 cargamento = row.pop("cargamentos", {})
@@ -29,9 +46,24 @@ class ViajeService:
                 row["numero_contenedor"] = furgon.get("numero_contenedor") if furgon else None
                 row["placa_vehiculo"] = vehiculo.get("placas") if vehiculo else None
                 row["nombre_tienda"] = tienda.get("nombre") if tienda else None
+                row["pais_destino"] = tienda.get("pais") if tienda else None
                 row["tienda_latitud"] = tienda.get("latitud") if tienda else None
                 row["tienda_longitud"] = tienda.get("longitud") if tienda else None
                 row["nombre_piloto"] = usuario.get("full_name") if usuario else None
+
+                # Merge de gastos
+                g = gastos_map.get(row["id"])
+                if g:
+                    row["flete_base"] = g.get("flete_base")
+                    row["multas_aduana"] = g.get("multas_aduana")
+                    row["viaticos_extra"] = g.get("viaticos_extra")
+                    row["parqueo_almacenaje"] = g.get("parqueo_almacenaje")
+                    row["otros_imprevistos"] = g.get("otros_imprevistos")
+                    row["total_sobrecostos"] = g.get("total_sobrecostos")
+                    row["total_gasto"] = g.get("total_gasto")
+                    row["tiene_gastos"] = True
+                else:
+                    row["tiene_gastos"] = False
                 
             return data
         except Exception as e:

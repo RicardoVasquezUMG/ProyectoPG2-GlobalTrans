@@ -279,7 +279,7 @@ export default function MonitoreoPage() {
                   <Popup>
                     <div style={{ minWidth: '200px' }} className="p-1">
                       <strong className="text-base block mb-1">{viaje.placa_vehiculo}</strong>
-                      <span className="block text-sm"><strong>PilotoTonto:</strong> {viaje.nombre_piloto || 'Sin piloto'}</span>
+                      <span className="block text-sm"><strong>Piloto:</strong> {viaje.nombre_piloto || 'Sin piloto'}</span>
                       <span className="block text-sm"><strong>Destino:</strong> {viaje.nombre_tienda}</span>
                       <span className="block text-sm"><strong>Estado:</strong> {estadoLabels[viaje.estado] || viaje.estado}</span>
                       {viaje.velocidad != null && (

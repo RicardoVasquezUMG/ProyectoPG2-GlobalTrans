@@ -26,3 +26,8 @@ export const getDashboardFinanciero = async () => {
   return response.data;
 };
 
+export const getFichaAuditoriaViaje = async (viajeId) => {
+  const response = await axiosInstance.get(`/api/reports/viaje/${viajeId}/ficha-auditoria`);
+  return response.data;
+};
+

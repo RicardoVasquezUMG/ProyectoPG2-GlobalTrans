@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card } from 'primereact/card';
 import { Chart } from 'primereact/chart';
 import { getDashboardKpis } from '../../api/reportsApi';
@@ -8,6 +9,7 @@ import { ROLES } from '../../utils/constants';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 
 export default function DashboardPage() {
+  const navigate = useNavigate();
   const [kpis, setKpis] = useState(null);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
@@ -182,28 +184,60 @@ export default function DashboardPage() {
           </Card>
         </div>
         <div className="col-12 lg:col-4">
-          <Card title="Accesos Rápidos" className="h-full shadow-2 border-round-xl">
+          <Card title="Accesos Rápidos de Gestión" className="h-full shadow-2 border-round-xl">
             <div className="flex flex-column gap-3 mt-3">
-              <div className="p-3 bg-black-alpha-10 border-round-lg flex align-items-center justify-content-between cursor-pointer hover:surface-hover transition-colors">
+              <div
+                onClick={() => navigate('/dashboard-financiero')}
+                className="p-3 bg-black-alpha-10 border-round-lg flex align-items-center justify-content-between cursor-pointer hover:surface-hover transition-colors"
+              >
                 <div className="flex align-items-center gap-3">
-                  <div className="bg-blue-100 p-2 border-circle"><i className="pi pi-map text-blue-500 text-xl"></i></div>
-                  <span className="font-bold text-900">Ver Mapa Global</span>
+                  <div className="bg-yellow-100 p-2 border-circle"><i className="pi pi-dollar text-yellow-600 text-xl"></i></div>
+                  <div>
+                    <span className="font-bold text-900 block">Dashboard Financiero</span>
+                    <span className="text-xs text-500">Rentabilidad, tiempo vs costo</span>
+                  </div>
                 </div>
                 <i className="pi pi-angle-right text-500"></i>
               </div>
 
-              <div className="p-3 bg-black-alpha-10 border-round-lg flex align-items-center justify-content-between cursor-pointer hover:surface-hover transition-colors">
-                <div className="flex align-items-center gap-3">
-                  <div className="bg-green-100 p-2 border-circle"><i className="pi pi-box text-green-500 text-xl"></i></div>
-                  <span className="font-bold text-900">Gestionar Cargamentos</span>
-                </div>
-                <i className="pi pi-angle-right text-500"></i>
-              </div>
-
-              <div className="p-3 bg-black-alpha-10 border-round-lg flex align-items-center justify-content-between cursor-pointer hover:surface-hover transition-colors">
+              <div
+                onClick={() => navigate('/auditoria')}
+                className="p-3 bg-black-alpha-10 border-round-lg flex align-items-center justify-content-between cursor-pointer hover:surface-hover transition-colors"
+              >
                 <div className="flex align-items-center gap-3">
                   <div className="bg-purple-100 p-2 border-circle"><i className="pi pi-chart-line text-purple-500 text-xl"></i></div>
-                  <span className="font-bold text-900">Reportes de Auditoría</span>
+                  <div>
+                    <span className="font-bold text-900 block">Auditoría & Rutas IA</span>
+                    <span className="text-xs text-500">Cumplimiento SLA y aduanas</span>
+                  </div>
+                </div>
+                <i className="pi pi-angle-right text-500"></i>
+              </div>
+
+              <div
+                onClick={() => navigate('/viajes')}
+                className="p-3 bg-black-alpha-10 border-round-lg flex align-items-center justify-content-between cursor-pointer hover:surface-hover transition-colors"
+              >
+                <div className="flex align-items-center gap-3">
+                  <div className="bg-green-100 p-2 border-circle"><i className="pi pi-compass text-green-600 text-xl"></i></div>
+                  <div>
+                    <span className="font-bold text-900 block">Costos de Viajes</span>
+                    <span className="text-xs text-500">Liquidación flete y sobrecostos</span>
+                  </div>
+                </div>
+                <i className="pi pi-angle-right text-500"></i>
+              </div>
+
+              <div
+                onClick={() => navigate('/monitoreo')}
+                className="p-3 bg-black-alpha-10 border-round-lg flex align-items-center justify-content-between cursor-pointer hover:surface-hover transition-colors"
+              >
+                <div className="flex align-items-center gap-3">
+                  <div className="bg-blue-100 p-2 border-circle"><i className="pi pi-map text-blue-500 text-xl"></i></div>
+                  <div>
+                    <span className="font-bold text-900 block">Monitoreo Global GPS</span>
+                    <span className="text-xs text-500">Seguimiento en vivo en mapa</span>
+                  </div>
                 </div>
                 <i className="pi pi-angle-right text-500"></i>
               </div>
