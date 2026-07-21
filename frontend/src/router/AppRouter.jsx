@@ -18,6 +18,7 @@ import { ROLES } from '../utils/constants';
 // Level 1 & 2 Analytics
 import MonitoreoPage from '../pages/admin/MonitoreoPage';
 import ReportsAndAuditPage from '../pages/admin/ReportsAndAuditPage';
+import DashboardFinancieroPage from '../pages/admin/DashboardFinancieroPage';
 
 // Level 1
 import UsersPage from '../pages/admin/UsersPage';
@@ -58,7 +59,7 @@ export default function AppRouter() {
         {/* Rutas de Monitoreo, Auditoría y Finanzas (Admin y Operador) */}
         <Route path="/monitoreo" element={<RoleRoute allowedRoles={[ROLES.LEVEL_1, ROLES.LEVEL_2]}><MonitoreoPage /></RoleRoute>} />
         <Route path="/auditoria" element={<RoleRoute allowedRoles={[ROLES.LEVEL_1, ROLES.LEVEL_2]}><ReportsAndAuditPage /></RoleRoute>} />
-        <Route path="/dashboard-financiero" element={<RoleRoute allowedRoles={[ROLES.LEVEL_1, ROLES.LEVEL_2]}><ReportsAndAuditPage /></RoleRoute>} />
+        <Route path="/dashboard-financiero" element={<RoleRoute allowedRoles={[ROLES.LEVEL_1, ROLES.LEVEL_2]}><DashboardFinancieroPage /></RoleRoute>} />
 
         {/* Rutas protegidas por rol: Nivel 1 (Admin) */}
         <Route path="/usuarios" element={<RoleRoute allowedRoles={[ROLES.LEVEL_1]}><UsersPage /></RoleRoute>} />

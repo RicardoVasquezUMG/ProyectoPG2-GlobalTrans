@@ -86,16 +86,48 @@ class ReportService:
                 entregas_data = [2, 3, 4, 3, 5, 4, 2]
                 retrasos_data = [0, 1, 0, 1, 0, 2, 1]
 
+            # Enriquecer con información financiera ejecutiva y estacionalidad activa
+            resumen_fin = {}
+            rutas_fin = []
+            try:
+                fin_data = await ReportService.get_dashboard_financiero()
+                resumen_fin = fin_data.get("resumen_ejecutivo", {})
+                rutas_fin = fin_data.get("rutas", [])
+            except Exception:
+                pass
+
+            temporada_activa = {}
+            try:
+                pred_data = await ReportService.get_prediccion_estacional_aduanas(mes=now.month)
+                temporada_activa = {
+                    "mes": now.month,
+                    "temporada": pred_data.get("temporada"),
+                    "es_temporada_alta": pred_data.get("es_temporada_alta"),
+                    "factor_demora": pred_data.get("factor_demora"),
+                    "motivo_estacional": pred_data.get("motivo_estacional"),
+                    "rutas_optimas_recomendadas": pred_data.get("rutas_eficientes_recomendadas", [])[:3]
+                }
+            except Exception:
+                pass
+
+            total_viajes_calc = activos + entregados + retrasados
+            sla_pct = round((entregados / (entregados + retrasados) * 100), 1) if (entregados + retrasados) > 0 else 92.5
+
             return {
                 "activos": activos,
                 "entregados": entregados,
                 "retrasados": retrasados,
+                "total_viajes": total_viajes_calc,
                 "tiempo_promedio_horas": avg_transit_time,
+                "sla_cumplimiento_pct": sla_pct,
                 "chart_data": {
                     "labels": chart_labels,
                     "entregas": entregas_data,
                     "retrasos": retrasos_data
-                }
+                },
+                "finanzas": resumen_fin,
+                "temporada": temporada_activa,
+                "top_corredores": rutas_fin[:5]
             }
         except Exception as e:
             raise BadRequestError(detail=f"Error al obtener KPIs: {str(e)}")

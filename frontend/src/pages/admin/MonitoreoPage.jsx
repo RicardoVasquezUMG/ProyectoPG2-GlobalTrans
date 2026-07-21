@@ -285,14 +285,7 @@ export default function MonitoreoPage() {
                       {viaje.velocidad != null && (
                         <span className="block text-sm text-500"><strong>Velocidad:</strong> {viaje.velocidad} km/h</span>
                       )}
-                      <div className="mt-2 pt-2 border-top-1 border-300">
-                        <Button
-                          label="Ver Ruta Planificada"
-                          icon="pi pi-directions"
-                          className="p-button-sm p-button-primary w-full font-bold"
-                          onClick={() => handleSelectViaje(viaje)}
-                        />
-                      </div>
+
                     </div>
                   </Popup>
                 </Marker>

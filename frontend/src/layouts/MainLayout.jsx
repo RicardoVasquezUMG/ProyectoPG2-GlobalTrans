@@ -66,6 +66,10 @@ export default function MainLayout() {
                   <div key={item.key} className="border-bottom-1 sidebar-border my-2 w-full"></div>
                 );
               }
+              const isActive = item.path === '/dashboard'
+                ? location.pathname === '/dashboard'
+                : (location.pathname === item.path || location.pathname.startsWith(item.path + '/'));
+
               return (
                 <Button
                   key={item.key}
@@ -74,7 +78,7 @@ export default function MainLayout() {
                   tooltip={isSidebarCollapsed ? item.label : undefined}
                   tooltipOptions={{ position: 'right' }}
                   onClick={() => navigate(item.path)}
-                  className={`p-button-text justify-content-start w-full text-sm font-medium dark-sidebar-btn ${location.pathname.startsWith(item.path) ? 'active' : ''
+                  className={`p-button-text justify-content-start w-full text-sm font-medium dark-sidebar-btn ${isActive ? 'active' : ''
                     } ${isSidebarCollapsed ? 'justify-content-center px-0' : ''}`}
                 />
               );
