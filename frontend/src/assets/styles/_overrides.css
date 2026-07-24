@@ -67,3 +67,44 @@
 .dark-sidebar .p-button.p-button-plain:focus {
     box-shadow: 0 0 0 2px #061442, 0 0 0 4px #061442 !important;
 }
+
+/* ==========================================================================
+   Alineación Perfecta del Historial de Eventos (Timeline)
+   Elimina el espacio vacío a la izquierda que desfasaba el contenido
+   ========================================================================== */
+.customized-timeline .p-timeline-event-opposite {
+    display: none !important;
+    width: 0 !important;
+    flex: 0 0 0 !important;
+    padding: 0 !important;
+}
+
+.customized-timeline .p-timeline-event-content {
+    flex: 1 1 auto !important;
+    padding-left: 1rem !important;
+    padding-bottom: 1.25rem !important;
+}
+
+.customized-timeline .p-timeline-event-separator {
+    flex: 0 0 auto !important;
+}
+
+/* Animación de pulso para el camión en su posición actual */
+@keyframes truck-pulse {
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7);
+    }
+    70% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 14px rgba(37, 99, 235, 0);
+    }
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
+    }
+}
+
+.truck-pulse-marker {
+    animation: truck-pulse 2s infinite;
+}

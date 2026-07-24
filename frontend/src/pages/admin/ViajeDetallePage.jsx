@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Polyline, Tooltip, useMap } from 'react-leaflet';
 import { Timeline } from 'primereact/timeline';
 import { Card } from 'primereact/card';
 import { Tag } from 'primereact/tag';
@@ -27,6 +27,48 @@ L.Icon.Default.mergeOptions({
   iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
 });
+
+// Componente para animar y centrar el mapa suavemente
+function FlyToLocation({ target }) {
+  const map = useMap();
+  useEffect(() => {
+    if (target && target[0] && target[1]) {
+      map.flyTo(target, 10, { duration: 1.2 });
+    }
+  }, [target, map]);
+  return null;
+}
+
+// Ícono de destino (Tienda)
+const storeIcon = new L.DivIcon({
+  className: 'store-destination-marker',
+  html: `
+    <div style="background:#059669;color:#ffffff;border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 8px rgba(0,0,0,0.3);border:2px solid #ffffff;">
+      <i class="pi pi-shop" style="font-size:16px;"></i>
+    </div>
+  `,
+  iconSize: [34, 34],
+  iconAnchor: [17, 17],
+  popupAnchor: [0, -17],
+});
+
+// Ícono del camión en posición actual
+const createTruckMarker = (estado) => {
+  const bg = estado === 'en_aduana' ? '#d97706' : estado === 'retrasado' ? '#dc2626' : '#2563eb';
+  return new L.DivIcon({
+    className: 'truck-current-marker',
+    html: `
+      <div style="position:relative;display:flex;align-items:center;justify-content:center;">
+        <div class="truck-pulse-marker" style="background:${bg};color:#ffffff;border-radius:50%;width:46px;height:46px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,0.45);border:3px solid #ffffff;cursor:pointer;">
+          <i class="pi pi-truck" style="font-size:22px;color:#ffffff;"></i>
+        </div>
+      </div>
+    `,
+    iconSize: [46, 46],
+    iconAnchor: [23, 23],
+    popupAnchor: [0, -23],
+  });
+};
 
 // Mapeo de estados
 const estadoOptions = [
@@ -280,32 +322,83 @@ export default function ViajeDetallePage() {
   const timelineContent = (item) => {
     const fecha = new Date(item.fecha_evento);
     return (
-      <Card className="mb-2">
+      <Card
+        className="mb-3 shadow-1 border-round-lg w-full"
+        style={{
+          borderLeft: `4px solid var(--${estadoSeverity[item.estado] || 'primary'}-color, #3b82f6)`
+        }}
+      >
         <div className="flex flex-column gap-1">
-          <div className="flex justify-content-between align-items-center">
-            <Tag severity={estadoSeverity[item.estado]} value={estadoLabels[item.estado] || item.estado} />
-            <span className="text-500 text-xs">
-              {fecha.toLocaleDateString('es-GT')} {fecha.toLocaleTimeString('es-GT', { hour: '2-digit', minute: '2-digit' })}
+          <div className="flex justify-content-between align-items-center flex-wrap gap-2">
+            <Tag severity={estadoSeverity[item.estado]} value={estadoLabels[item.estado] || item.estado} className="text-xs font-bold" />
+            <span className="text-500 text-xs font-semibold">
+              <i className="pi pi-calendar mr-1"></i>
+              {fecha.toLocaleDateString('es-GT', { day: '2-digit', month: 'short' })} {fecha.toLocaleTimeString('es-GT', { hour: '2-digit', minute: '2-digit' })}
             </span>
           </div>
           {item.ubicacion_nombre && (
-            <div className="text-sm flex align-items-center gap-1">
-              <i className="pi pi-map-marker text-xs" />
+            <div className="text-sm font-semibold text-800 flex align-items-center gap-2 mt-1">
+              <i className="pi pi-map-marker text-primary text-sm" />
               <span>{item.ubicacion_nombre}{item.pais ? ` — ${item.pais}` : ''}</span>
             </div>
           )}
-          {item.notas && <p className="text-sm text-600 m-0 mt-1">{item.notas}</p>}
+          {item.notas && (
+            <p className="text-sm text-600 m-0 mt-1 bg-surface-50 p-2 border-round">
+              {item.notas}
+            </p>
+          )}
+          {item.latitud && item.longitud && (
+            <span className="text-xs text-400 mt-1">
+              GPS: {parseFloat(item.latitud).toFixed(4)}, {parseFloat(item.longitud).toFixed(4)}
+            </span>
+          )}
           {item.nombre_registrador && (
-            <span className="text-xs text-400">Registrado por: {item.nombre_registrador}</span>
+            <span className="text-xs text-400">
+              Registrado por: <strong>{item.nombre_registrador}</strong>
+            </span>
           )}
         </div>
       </Card>
     );
   };
 
-  // --- Puntos del mapa ---
+  // --- Puntos del mapa y Posición del Camión ---
+  const [flyTarget, setFlyTarget] = useState(null);
   const checkpointsConCoords = checkpoints.filter(cp => cp.latitud && cp.longitud);
   const routePositions = checkpointsConCoords.map(cp => [parseFloat(cp.latitud), parseFloat(cp.longitud)]);
+
+  const truckPos = viaje?.posicion_actual || (
+    checkpointsConCoords.length > 0
+      ? {
+          latitud: parseFloat(checkpointsConCoords[checkpointsConCoords.length - 1].latitud),
+          longitud: parseFloat(checkpointsConCoords[checkpointsConCoords.length - 1].longitud),
+          fecha_actualizacion: checkpointsConCoords[checkpointsConCoords.length - 1].fecha_evento,
+          velocidad: null
+        }
+      : (viaje?.tienda_latitud && viaje?.tienda_longitud && viaje?.estado === 'entregado')
+      ? {
+          latitud: parseFloat(viaje.tienda_latitud),
+          longitud: parseFloat(viaje.tienda_longitud),
+          fecha_actualizacion: viaje.fecha_llegada_real,
+          velocidad: 0
+        }
+      : {
+          latitud: 14.6349,
+          longitud: -90.5069,
+          fecha_actualizacion: viaje?.fecha_plan_salida,
+          velocidad: 0
+        }
+  );
+
+  const truckCoordinates = truckPos && truckPos.latitud && truckPos.longitud
+    ? [parseFloat(truckPos.latitud), parseFloat(truckPos.longitud)]
+    : [14.6349, -90.5069];
+
+  const handleCenterTruck = () => {
+    if (truckCoordinates) {
+      setFlyTarget([truckCoordinates[0], truckCoordinates[1], Date.now()]);
+    }
+  };
 
   if (loading) {
     return (
@@ -330,20 +423,38 @@ export default function ViajeDetallePage() {
   return (
     <div className="page-container">
       {/* Header */}
-      <div className="page-header flex justify-content-between align-items-center mb-4">
+      <div className="page-header flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
         <div className="flex align-items-center gap-3">
           <Button icon="pi pi-arrow-left" className="p-button-text p-button-rounded" onClick={() => navigate('/viajes')} />
           <div>
-            <h1 className="text-2xl font-bold m-0">
-              Viaje — {viaje.placa_vehiculo}
+            <h1 className="text-2xl font-bold m-0 flex align-items-center gap-2">
+              <i className="pi pi-truck text-primary"></i>
+              Viaje — Placas: {viaje.placa_vehiculo}
             </h1>
-            <p className="text-500 mt-1 mb-0">
-              ID: {viaje.id?.slice(0, 8)}... · Destino: {viaje.nombre_tienda} ({viaje.pais_destino})
-            </p>
+            <div className="flex align-items-center gap-2 mt-2 mb-0 flex-wrap">
+              <span className="text-500 text-sm font-semibold">ID de Viaje:</span>
+              <span className="font-mono text-xs md:text-sm bg-surface-100 px-2 py-1 border-round border-1 surface-border select-all font-bold text-900 tracking-wide">
+                {viaje.id}
+              </span>
+              <Button
+                icon="pi pi-copy"
+                className="p-button-text p-button-sm p-0 w-2rem h-2rem text-500 hover:text-primary"
+                tooltip="Copiar ID completo"
+                tooltipOptions={{ position: 'top' }}
+                onClick={() => {
+                  navigator.clipboard.writeText(viaje.id);
+                  showSuccess('ID de viaje copiado al portapapeles');
+                }}
+              />
+              <span className="text-400">·</span>
+              <span className="text-600 text-sm">
+                Destino: <strong>{viaje.nombre_tienda}</strong> ({viaje.pais_destino})
+              </span>
+            </div>
           </div>
         </div>
-        <div className="flex gap-2 align-items-center">
-          <Tag severity={estadoSeverity[viaje.estado]} value={estadoLabels[viaje.estado] || viaje.estado} className="text-base px-3 py-2" />
+        <div className="flex gap-2 align-items-center flex-wrap">
+          <Tag severity={estadoSeverity[viaje.estado]} value={estadoLabels[viaje.estado] || viaje.estado} className="text-base px-3 py-2 font-bold" />
           {!isPiloto && (
             <>
               <Button label="Costos del Viaje" icon="pi pi-dollar" severity="warning" outlined onClick={() => setGastosDialogVisible(true)} />
@@ -366,20 +477,20 @@ export default function ViajeDetallePage() {
       <div className="grid mb-4">
         <div className="col-6 md:col-3">
           <Card>
-            <div className="text-500 text-sm mb-1">Piloto</div>
-            <div className="font-semibold">{viaje.nombre_piloto}</div>
+            <div className="text-500 text-sm mb-1">Piloto Asignado</div>
+            <div className="font-semibold text-900">{viaje.nombre_piloto || 'Sin piloto asignado'}</div>
           </Card>
         </div>
         <div className="col-6 md:col-3">
           <Card>
-            <div className="text-500 text-sm mb-1">Vehículo</div>
-            <div className="font-semibold">{viaje.placa_vehiculo}</div>
+            <div className="text-500 text-sm mb-1">Vehículo / Placa</div>
+            <div className="font-semibold text-900">{viaje.placa_vehiculo}</div>
           </Card>
         </div>
         <div className="col-6 md:col-3">
           <Card>
             <div className="text-500 text-sm mb-1">Contenedor</div>
-            <div className="font-semibold">{viaje.numero_contenedor || 'N/A'}</div>
+            <div className="font-semibold text-900">{viaje.numero_contenedor || 'N/A'}</div>
           </Card>
         </div>
         <div className="col-12 md:col-3">
@@ -388,33 +499,102 @@ export default function ViajeDetallePage() {
             <div className="font-bold text-lg text-primary">
               ${(gastos.total_gasto || (gastos.flete_base + (gastos.multas_aduana||0) + (gastos.viaticos_extra||0) + (gastos.parqueo_almacenaje||0))).toFixed(2)}
             </div>
-            <span className="text-xs text-orange-500">
-              Imprevistos: ${(gastos.total_sobrecostos || ((gastos.multas_aduana||0) + (gastos.viaticos_extra||0) + (gastos.parqueo_almacenaje||0))).toFixed(2)}
+            <span className="text-xs text-orange-500 font-semibold">
+              Sobrecostos: ${(gastos.total_sobrecostos || ((gastos.multas_aduana||0) + (gastos.viaticos_extra||0) + (gastos.parqueo_almacenaje||0))).toFixed(2)}
             </span>
           </Card>
         </div>
       </div>
 
       <div className="grid">
-        {/* Mapa con ruta */}
+        {/* Mapa con ruta y camión actual */}
         <div className="col-12 lg:col-7">
-          <Card title="Mapa de Recorrido">
+          <Card
+            title={
+              <div className="flex justify-content-between align-items-center flex-wrap gap-2">
+                <span className="text-lg font-bold flex align-items-center gap-2">
+                  <i className="pi pi-map text-primary"></i>
+                  Ubicación Satelital & Ruta del Camión
+                </span>
+                <Button
+                  label="Centrar en Camión"
+                  icon="pi pi-compass"
+                  size="small"
+                  outlined
+                  onClick={handleCenterTruck}
+                  className="font-semibold"
+                />
+              </div>
+            }
+          >
             <MapContainer
-              center={routePositions.length > 0 ? routePositions[routePositions.length - 1] : [14.6349, -90.5069]}
-              zoom={7}
-              style={{ height: '50vh', width: '100%', borderRadius: '8px' }}
+              center={truckCoordinates}
+              zoom={8}
+              style={{ height: '52vh', width: '100%', borderRadius: '8px' }}
               scrollWheelZoom={true}
             >
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
-              {/* Línea de ruta */}
+
+              <FlyToLocation target={flyTarget ? [flyTarget[0], flyTarget[1]] : null} />
+
+              {/* Línea de ruta recorrida */}
               {routePositions.length > 1 && (
-                <Polyline positions={routePositions} color="#6366f1" weight={3} opacity={0.8} />
+                <Polyline positions={routePositions} color="#3b82f6" weight={4} opacity={0.8} />
               )}
-              {/* Marcadores de checkpoints */}
-              {checkpointsConCoords.map((cp, idx) => (
+
+              {/* Proyección hacia tienda si no está entregado */}
+              {viaje.tienda_latitud && viaje.tienda_longitud && viaje.estado !== 'entregado' && (
+                <Polyline
+                  positions={[truckCoordinates, [parseFloat(viaje.tienda_latitud), parseFloat(viaje.tienda_longitud)]]}
+                  pathOptions={{ color: '#059669', weight: 3, dashArray: '8, 8', opacity: 0.6 }}
+                />
+              )}
+
+              {/* Marcador del Camión en Posición Actual */}
+              <Marker
+                position={truckCoordinates}
+                icon={createTruckMarker(viaje.estado)}
+              >
+                <Tooltip permanent direction="top" offset={[0, -24]}>
+                  🚚 Camión: {viaje.placa_vehiculo} ({estadoLabels[viaje.estado] || viaje.estado})
+                </Tooltip>
+                <Popup>
+                  <div style={{ minWidth: '220px' }} className="p-1">
+                    <div className="flex align-items-center gap-2 mb-2 pb-2 border-bottom-1 surface-border">
+                      <i className="pi pi-truck text-primary text-xl" />
+                      <div>
+                        <strong className="block text-base">{viaje.placa_vehiculo}</strong>
+                        <span className="text-xs text-500">Unidad de Transporte Principal</span>
+                      </div>
+                    </div>
+                    <div className="text-sm flex flex-column gap-1">
+                      <div>
+                        <strong>Estado actual:</strong>{' '}
+                        <Tag severity={estadoSeverity[viaje.estado]} value={estadoLabels[viaje.estado] || viaje.estado} className="text-xs ml-1" />
+                      </div>
+                      <div><strong>Piloto:</strong> {viaje.nombre_piloto || 'Asignado'}</div>
+                      <div><strong>Destino:</strong> {viaje.nombre_tienda} ({viaje.pais_destino})</div>
+                      {truckPos?.velocidad != null && (
+                        <div><strong>Velocidad reportada:</strong> {truckPos.velocidad} km/h</div>
+                      )}
+                      <div className="text-xs text-500 mt-1">
+                        <strong>Coordenadas GPS:</strong> {truckCoordinates[0].toFixed(4)}, {truckCoordinates[1].toFixed(4)}
+                      </div>
+                      {truckPos?.fecha_actualizacion && (
+                        <small className="text-400 mt-1 block">
+                          Último reporte: {new Date(truckPos.fecha_actualizacion).toLocaleString('es-GT')}
+                        </small>
+                      )}
+                    </div>
+                  </div>
+                </Popup>
+              </Marker>
+
+              {/* Marcadores de checkpoints previos */}
+              {checkpointsConCoords.map((cp) => (
                 <Marker key={cp.id} position={[parseFloat(cp.latitud), parseFloat(cp.longitud)]}>
                   <Popup>
                     <strong>{estadoLabels[cp.estado] || cp.estado}</strong>
@@ -425,25 +605,56 @@ export default function ViajeDetallePage() {
                   </Popup>
                 </Marker>
               ))}
+
+              {/* Marcador de Tienda Destino */}
+              {viaje.tienda_latitud && viaje.tienda_longitud && (
+                <Marker
+                  position={[parseFloat(viaje.tienda_latitud), parseFloat(viaje.tienda_longitud)]}
+                  icon={storeIcon}
+                >
+                  <Tooltip direction="bottom" offset={[0, 18]}>
+                    🏪 Destino: {viaje.nombre_tienda}
+                  </Tooltip>
+                  <Popup>
+                    <div className="p-1">
+                      <strong>Punto de Entrega Final</strong>
+                      <br />
+                      <span>{viaje.nombre_tienda} ({viaje.pais_destino})</span>
+                      {viaje.direccion_tienda && <p className="text-xs text-500 m-0 mt-1">{viaje.direccion_tienda}</p>}
+                    </div>
+                  </Popup>
+                </Marker>
+              )}
             </MapContainer>
           </Card>
         </div>
 
         {/* Timeline de checkpoints */}
         <div className="col-12 lg:col-5">
-          <Card title="Historial de Eventos">
-            <div style={{ maxHeight: '50vh', overflowY: 'auto' }}>
+          <Card
+            title={
+              <div className="flex justify-content-between align-items-center">
+                <span className="text-lg font-bold flex align-items-center gap-2">
+                  <i className="pi pi-history text-primary"></i>
+                  Historial de Eventos
+                </span>
+                <Tag severity="info" value={`${checkpoints.length} registros`} />
+              </div>
+            }
+          >
+            <div style={{ maxHeight: '52vh', overflowY: 'auto', paddingRight: '4px' }}>
               {checkpoints.length === 0 ? (
                 <div className="text-center text-500 p-4">
-                  <i className="pi pi-clock text-4xl mb-2" style={{ display: 'block' }} />
-                  <p>No hay checkpoints registrados</p>
+                  <i className="pi pi-clock text-4xl mb-2 text-300" style={{ display: 'block' }} />
+                  <p className="m-0 font-medium">No hay checkpoints registrados aún</p>
+                  <span className="text-xs text-400">Los eventos se registrarán a medida que el viaje avance</span>
                 </div>
               ) : (
                 <Timeline
                   value={checkpoints}
                   marker={timelineMarker}
                   content={timelineContent}
-                  className="customized-timeline"
+                  className="customized-timeline w-full"
                 />
               )}
             </div>

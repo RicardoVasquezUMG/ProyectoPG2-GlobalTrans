@@ -249,6 +249,47 @@ class TrackingService:
             viaje["tienda_longitud"] = tienda_info.get("longitud")
             viaje["numero_contenedor"] = furgon_info.get("numero_contenedor") if furgon_info else None
 
+            # Obtener posición GPS actual del camión
+            pos_resp = sb.table("viaje_posicion_actual").select("*").eq("viaje_id", viaje_id).execute()
+            if pos_resp.data and pos_resp.data[0].get("latitud") and pos_resp.data[0].get("longitud"):
+                p = pos_resp.data[0]
+                viaje["posicion_actual"] = {
+                    "latitud": float(p["latitud"]),
+                    "longitud": float(p["longitud"]),
+                    "velocidad": float(p["velocidad"]) if p.get("velocidad") is not None else None,
+                    "rumbo": p.get("rumbo"),
+                    "fecha_actualizacion": p.get("fecha_actualizacion")
+                }
+            else:
+                # Si no tiene registro en viaje_posicion_actual, buscar el último checkpoint con coordenadas
+                cp_resp = sb.table("viaje_checkpoints").select("latitud, longitud, fecha_evento").eq("viaje_id", viaje_id).order("fecha_evento", desc=True).limit(1).execute()
+                if cp_resp.data and cp_resp.data[0].get("latitud") and cp_resp.data[0].get("longitud"):
+                    cp = cp_resp.data[0]
+                    viaje["posicion_actual"] = {
+                        "latitud": float(cp["latitud"]),
+                        "longitud": float(cp["longitud"]),
+                        "velocidad": None,
+                        "rumbo": None,
+                        "fecha_actualizacion": cp.get("fecha_evento")
+                    }
+                elif viaje.get("estado") == "entregado" and viaje.get("tienda_latitud") and viaje.get("tienda_longitud"):
+                    viaje["posicion_actual"] = {
+                        "latitud": float(viaje["tienda_latitud"]),
+                        "longitud": float(viaje["tienda_longitud"]),
+                        "velocidad": 0,
+                        "rumbo": None,
+                        "fecha_actualizacion": viaje.get("fecha_llegada_real")
+                    }
+                else:
+                    # Ubicación base en centro de distribución central Guatemala
+                    viaje["posicion_actual"] = {
+                        "latitud": 14.6349,
+                        "longitud": -90.5069,
+                        "velocidad": 0,
+                        "rumbo": None,
+                        "fecha_actualizacion": viaje.get("fecha_plan_salida")
+                    }
+
             return viaje
 
         except BadRequestError:
